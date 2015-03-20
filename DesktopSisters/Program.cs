@@ -22,10 +22,7 @@ namespace DesktopSisters
         public byte[] Pixels { get; set; }
 
         
-        public int SunX;
-        public int SunY;
-        public int MoonX;
-        public int MoonY;
+        
 
 
         
@@ -34,6 +31,7 @@ namespace DesktopSisters
         public WallpaperManager WallpaperManager;
 
         public double DayRatio => TimeManager.DayRatio;
+
 
         public Sisters()
         {

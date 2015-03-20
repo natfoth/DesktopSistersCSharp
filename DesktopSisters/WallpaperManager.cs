@@ -88,11 +88,21 @@ namespace DesktopSisters
 
         public void GenerateWallpaper()
         {
-            
+            if (TimeManager.IsDayTime)
+            {
+                GenerateDayBackground();
+            }
         }
 
         public void GenerateDayBackground()
         {
+            var INNER_CIRCLE = 1000.0*ResW*1.0/1680.0;
+            var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
+
+
+
+
+
             Benchmark.Start();
             var wallpaperLockBitmap = new LockBitmap(Wallpaper);
             wallpaperLockBitmap.LockBits();
