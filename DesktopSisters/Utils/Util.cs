@@ -4,10 +4,79 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NAA
+namespace DesktopSisters.Utils
 {
+    public class Benchmark
+    {
+        private static DateTime startDate = DateTime.MinValue;
+        private static DateTime endDate = DateTime.MinValue;
+
+        public static TimeSpan Span { get { return endDate.Subtract(startDate); } }
+
+        public static void Start() { startDate = DateTime.Now; }
+
+        public static void End() { endDate = DateTime.Now; }
+
+        public static double GetMiliseconds()
+        {
+            if (endDate == DateTime.MinValue) return 0.0;
+            else return Span.TotalMilliseconds;
+        }
+    }
+
     public class Util
     {
+        public static double ConvertDegree(string toConvert)
+        {
+            //"77 2 00.000W"; Sample Input from textBox1
+            var input = toConvert;
+            double sd = 0.0;
+            double min = 0.0;
+            double sec = 0.0;
+            double deg = 0.0;
+            string direction = input.Substring((input.Length - 1), 1);
+            string sign = "";
+
+            if ((direction.ToUpper() == "S") || (direction.ToUpper() == "W"))
+            {
+                sign = "-";
+            }
+
+            int degIndex = input.IndexOf('°');
+            if (degIndex > 0)
+            {
+                var text = input.Substring(0, degIndex);
+                deg = Convert.ToDouble(text);
+            }
+
+            int minIndex = input.IndexOf('\'');
+            if (minIndex > 0)
+            {
+                var text = input.Substring(degIndex + 1, minIndex - (degIndex + 1));
+                min = Convert.ToDouble(text);
+            }
+
+            min = min / ((double)60);
+            sec = sec / ((double)3600);
+            sd = deg + min + sec;
+
+            if (!(string.IsNullOrEmpty(sign)))
+            {
+                sd = sd * (-1);
+            }
+
+            sd = Math.Round(sd, 6);
+            string sdnew = Convert.ToString(sd);
+            string sdnew1 = "";
+
+            sdnew1 = string.Format("{0:0.000000}", sd);
+            return sd;
+            //EXPECTED OUTPUT -77.03333
+        }
+
+
+
+
         //*********************************************************************/
 
         // Convert radian angle to degrees
