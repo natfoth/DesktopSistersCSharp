@@ -92,11 +92,15 @@ namespace DesktopSisters
             var sunriseString = Util.getTimeString(sunRise, zone, jd, false);
             var sunsetString = Util.getTimeString(sunSet, zone, jd, false);
 
-            SunRise = DateTime.ParseExact(String.Format("{0:00}-{1:00}-{2:00} {3:00}:{4:00}:00", DateTime.Now.Year, DateTime.Now.Month,
-                DateTime.Now.Day, Int16.Parse(sunriseString.Split(':').First()), Int16.Parse(sunriseString.Split(':').Last())), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+            var sunRiseHour = sunriseString.Split(':').First();
+            var sunRiseMinute = sunriseString.Split(':').Last();
 
-            SunSet = DateTime.ParseExact(String.Format("{0:00}-{1:00}-{2:00} {3:00}:{4:00}:00", DateTime.Now.Year, DateTime.Now.Month,
-                DateTime.Now.Day, Int16.Parse(sunsetString.Split(':').First()), Int16.Parse(sunsetString.Split(':').Last())), "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+            SunRise = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(sunRiseHour), int.Parse(sunRiseMinute), 0);
+            
+            var sunSetMinute = sunsetString.Split(':').Last();
+            var sunSetHour = sunsetString.Split(':').First();
+
+            SunSet = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
 
             double currentTimeDec = Double.Parse(String.Format("{0}.{1}", date.Hour, date.Minute));
             double sunRiseTimeDec = Double.Parse(sunriseString.Replace(":", "."));

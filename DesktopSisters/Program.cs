@@ -21,12 +21,6 @@ namespace DesktopSisters
         public int Depth { get; private set; }
         public byte[] Pixels { get; set; }
 
-        
-        
-
-
-        
-
         public TimeManager TimeManager;
         public WallpaperManager WallpaperManager;
 
@@ -38,10 +32,6 @@ namespace DesktopSisters
             TimeManager = new TimeManager();
             WallpaperManager = new WallpaperManager(TimeManager);
             WallpaperManager.Init();
-
-
-
-
             WallpaperManager.Save();
         }
 
