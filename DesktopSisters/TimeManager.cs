@@ -45,6 +45,9 @@ namespace DesktopSisters
             var resolution = Screen.PrimaryScreen.Bounds;
             var resW = resolution.Width;
             var resH = resolution.Height;
+            var maxHeight = resH-300;
+            var minHeight = 300;
+
 
             var radius = resH*1.0/8.0 + 0.5*resW*resW/resH;
             var centerX = resW*0.5;
@@ -54,7 +57,21 @@ namespace DesktopSisters
             var angleSet = -angleRise;
 
             var sunRatio = DayRatio*2.0;
-            var moonRatio = DayRatio*2.0 - 1.0;
+            var moonRatio = NightRatio*2.0;
+
+
+            var amountToDo = 0.1;
+            //amountToDo = 1.0 - amountToDo;
+
+            var curveAmount = amountToDo * amountToDo;
+
+            MoonX = resW*amountToDo;
+            MoonY = (((resH - minHeight)*curveAmount) + minHeight);
+
+
+            //current - subtract min, then divide by max-min
+            //multiple by the Max-min then add min
+            //inverse at noon
 
             var sunAngle = angleRise*(1.0 - sunRatio) + angleSet*sunRatio;
             var moonAngle = angleRise*(1.0 - moonRatio) + angleSet*moonRatio;
@@ -62,8 +79,8 @@ namespace DesktopSisters
             SunX = Math.Cos(90 - sunAngle)*radius + centerX;
             SunY = -Math.Sin(90 - sunAngle)*radius + centerY;
 
-            MoonX = Math.Cos(90 - moonAngle)*radius + centerX;
-            MoonY = -Math.Sin(90 - moonAngle)*radius + centerY;
+            //MoonX = Math.Cos(90 - moonAngle)*radius + centerX;
+           // MoonY = -Math.Sin(90 - moonAngle)*radius + centerY;
         }
 
         public void SetSunCycleRatio(double Latitude, double Longitude)
