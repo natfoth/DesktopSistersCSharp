@@ -26,10 +26,10 @@ namespace DesktopSisters
         public void Update()
         {
             //47.9972° N, 11.3406° E
-            //var lat = Util.ConvertDegree("33°35'N");
-            //var longi = Util.ConvertDegree("86°50'W");
-            var lat = Util.ConvertDegree("47°9972'N");
-            var longi = Util.ConvertDegree("11°3406'E");
+            var lat = Util.ConvertDegree("33°35'N");
+            var longi = Util.ConvertDegree("86°50'W");
+            //var lat = Util.ConvertDegree("47°9972'N");
+            //var longi = Util.ConvertDegree("11°3406'E");
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
