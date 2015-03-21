@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DesktopSisters.Utils;
@@ -22,20 +23,50 @@ namespace DesktopSisters
         public double MoonX;
         public double MoonY;
 
+        private double _latitude;
+        private double _longitude;
+
+        private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)° (?<latC>[NS]), (?<long>\d\d[.][\d]+)° (?<longC>[EW])", RegexOptions.Compiled);
+
+        public TimeManager(string latLong)
+        {
+            if (latLong != null) {
+                Tuple<string, string> parsed = GetGoogleLatLong(latLong);
+
+                if (parsed != null) {
+                    _latitude = Util.ConvertDegree(parsed.Item1);
+                    _longitude = Util.ConvertDegree(parsed.Item2);
+                    Console.WriteLine(_latitude);
+                    Console.WriteLine(_longitude);
+                }
+            }
+        }
 
         public void Update()
         {
-            //47.9972° N, 11.3406° E
-            var lat = Util.ConvertDegree("33°35'N");
-            var longi = Util.ConvertDegree("86°50'W");
-            //var lat = Util.ConvertDegree("47°9972'N");
-            //var longi = Util.ConvertDegree("11°3406'E");
+            //var lat = Util.ConvertDegree("33°35'N");
+            //var longi = Util.ConvertDegree("86°50'W");
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
-            SetSunCycleRatio(lat, longi);
+            SetSunCycleRatio(_latitude, _longitude);
             CalculateSunPosition();
         }
+
+
+
+        private Tuple<string, string> GetGoogleLatLong(string latLong)
+        {
+            var match = _googleLatLongRegex.Match(latLong);
+
+            if (!match.Success)
+                return null;
+            var latitude = match.Groups["lat"].Value.Replace(".", "°") + "'" + match.Groups["latC"].Value;
+            var longitude = match.Groups["long"].Value.Replace(".", "°") + "'" + match.Groups["longC"].Value;
+
+            return new Tuple<string, string>(latitude, longitude);
+        }
+
 
         public bool IsTwilight => Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60;
 

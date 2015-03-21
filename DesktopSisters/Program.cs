@@ -29,7 +29,7 @@ namespace DesktopSisters
 
         public Sisters()
         {
-            TimeManager = new TimeManager();
+            TimeManager = new TimeManager("47.9972° N, 11.3406° E");
             TimeManager.Update();
 
             WallpaperManager = new WallpaperManager(TimeManager);
