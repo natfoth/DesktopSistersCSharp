@@ -30,6 +30,8 @@ namespace DesktopSisters
         public Sisters()
         {
             TimeManager = new TimeManager();
+            TimeManager.Update();
+
             WallpaperManager = new WallpaperManager(TimeManager);
             WallpaperManager.Init();
             WallpaperManager.Save();
