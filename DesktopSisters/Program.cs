@@ -50,6 +50,7 @@ namespace DesktopSisters
         {
             var app = new Sisters();
             app.Start();
+            Console.ReadLine();
         }
     }
 }
