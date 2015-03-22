@@ -1,20 +1,17 @@
 using System;
+using System.Threading;
 
 namespace DesktopSisters
 {
     public class Sisters
     {
         private readonly Configuration _config;
-        public int Height;
-        public int Width;
-        public int Depth { get; private set; }
-        public byte[] Pixels { get; set; }
 
         public TimeManager TimeManager;
         public WallpaperManager WallpaperManager;
 
-        public double DayRatio => TimeManager.DayRatio;
 
+        private System.Windows.Forms.Timer _pulse;
 
         public Sisters(Configuration config)
         {
@@ -25,11 +22,31 @@ namespace DesktopSisters
             WallpaperManager = new WallpaperManager(TimeManager);
             WallpaperManager.Init();
             WallpaperManager.Save();
+
+
+            _pulse = new System.Windows.Forms.Timer();
+            _pulse.Tick += new EventHandler(Pulse);
+            _pulse.Interval = 30 * 1000; // in miliseconds
+            _pulse.Start();
         }
 
-        public void Start()
+        private void Start()
         {
             TimeManager.Update();
+        }
+
+        private void Pulse(object sender, EventArgs e)
+        {
+            _pulse.Stop();
+            _pulse.Start();
+
+            Update();
+        }
+
+        private void Update()
+        {
+            TimeManager.Update();
+            WallpaperManager.Update();
         }
         
     }

@@ -15,10 +15,12 @@ namespace DesktopSistersCSharpForm
         [STAThread]
         static void Main()
         {
-            var app = new Sisters(TryLoadConfig());
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            var app = new Sisters(TryLoadConfig());
+
+            
             Application.Run(new Form1());
 
             
