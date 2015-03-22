@@ -80,10 +80,10 @@ namespace DesktopSisters
             const int minHeight = 300;
 
             SunX = resW * DayRatio;
-            if (NightRatio < 0.5)
-                SunY = (resH - (resH * NightRatio)) - minHeight;
+            if (DayRatio < 0.5)
+                SunY = (resH - (resH * DayRatio)) - minHeight;
             else
-                SunY = (resH - (resH * (1.0 - NightRatio))) - minHeight;
+                SunY = (resH - (resH * (1.0 - DayRatio))) - minHeight;
 
             MoonX = resW*NightRatio;
             if(NightRatio < 0.5)
