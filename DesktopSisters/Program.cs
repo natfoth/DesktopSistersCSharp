@@ -14,43 +14,60 @@ using System.Windows.Forms;
 
 namespace DesktopSisters
 {
-    public class Sisters
-    {
-        public int Height;
-        public int Width;
-        public int Depth { get; private set; }
-        public byte[] Pixels { get; set; }
-
-        public TimeManager TimeManager;
-        public WallpaperManager WallpaperManager;
-
-        public double DayRatio => TimeManager.DayRatio;
-
-
-        public Sisters()
-        {
-            TimeManager = new TimeManager("47.9972° N, 11.3406° E");
-            TimeManager.Update();
-
-            WallpaperManager = new WallpaperManager(TimeManager);
-            WallpaperManager.Init();
-            WallpaperManager.Save();
-        }
-
-        public void Start()
-        {
-            TimeManager.Update();
-        }
-        
-    }
-
     class Program
     {
         private static void Main(string[] args)
         {
-            var app = new Sisters();
-            app.Start();
-            Console.ReadLine();
+            try
+            {
+                var app = new Sisters(TryLoadConfig());
+                app.Start();
+                Console.WriteLine();
+                Console.WriteLine("The Program has finished");
+                Console.WriteLine("Press enter to close....");
+                Console.ReadLine();
+            }
+            catch (HandledFatalException)
+            {
+                Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                WriteExceptionFailureMessage(ex, "There was an Unhandled Fatal Error!");
+            }
+
+        }
+
+        private static Configuration TryLoadConfig()
+        {
+            try
+            {
+                return Configuration.LoadConfig("config.ini");
+            }
+            catch (Exception ex)
+            {
+                WriteExceptionFailureMessage(ex, "There was a Fatal Error Reading your Configuration File!");
+                throw new HandledFatalException();
+            }
+        }
+
+        public static void WriteExceptionFailureMessage(Exception ex, params string[] messages)
+        {
+            foreach (var message in messages)
+            {
+                Console.WriteLine(message);
+            }
+            Console.WriteLine("Please read the error below,");
+            Console.WriteLine("If you feel it is a bug please report to:");
+            Console.WriteLine("http://www.github.com/natfoth/DesktopSistersCSharp/issues");
+            Console.WriteLine("");
+            Console.WriteLine("=========================================================");
+            Console.WriteLine("");
+            Console.WriteLine("Excecption details:");
+            Console.WriteLine("");
+            Console.WriteLine(ex.ToString());
         }
     }
+
+    public class HandledFatalException : Exception {}
 }
