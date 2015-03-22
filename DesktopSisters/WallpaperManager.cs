@@ -95,6 +95,7 @@ namespace DesktopSisters
                 GenerateNightBackground();
                 GenerateNightSky();
                 GenerateNightForground();
+                GenerateCanvasEffect();
             }
 
             if (TimeManager.IsDayTime)
@@ -114,7 +115,54 @@ namespace DesktopSisters
                 canvas.Save();
             }
 
+            Benchmark.Start();
+            var wallpaperLockBitmap = new LockBitmap(Wallpaper);
+            wallpaperLockBitmap.LockBits();
 
+            for (int y = 0; y < wallpaperLockBitmap.Height; y++)
+            {
+                for (int x = 0; x < wallpaperLockBitmap.Width; x++)
+                {
+
+                    var blend = canvasResized.GetPixel(x, y);
+                    var src = wallpaperLockBitmap.GetPixel(x, y);
+
+                    int red = src.R;
+                    int green = src.G;
+                    int blue = src.B;
+                    int alpha = src.A;
+
+                    if (src.R < 128)
+                        red = Limit255((2 * (double)src.R * (double)blend.R) / 255);
+                    else
+                        red = Limit255(255 - (2 * (255 - blend.R) * (255 - src.R)) / 255);
+
+                    if (src.G < 128)
+                        green = Limit255((2 * (double)src.G * (double)blend.G) / 255);
+                    else
+                        green = Limit255(255 - (2 * (255 - blend.G) * (255 - src.G)) / 255);
+
+                    if (src.B < 128)
+                        blue = Limit255((2 * (double)src.B * (double)blend.B) / 255);
+                    else
+                        blue = Limit255(255 - (2 * (255 - blend.B) * (255 - src.B)) / 255);
+
+
+                    alpha = Limit255(((double)src.A * (double)blend.A) / 255.0f);
+
+                    var newColor = Color.FromArgb(alpha, red, green, blue);
+
+                   // var dest = src;
+                   // dest = Merge(dest, newColor);
+
+
+                    wallpaperLockBitmap.SetPixel(x, y, newColor);
+                }
+            }
+
+            wallpaperLockBitmap.UnlockBits();
+            Benchmark.End();
+            double miliseconds = Benchmark.GetMiliseconds();
         }
 
         public void GenerateNightBackground()
@@ -303,6 +351,34 @@ namespace DesktopSisters
             return Color.FromArgb(alpha, red, green, blue);
         }
 
+        public Color Merge(Color dest, Color src)
+        {
+
+            int destAlpha = dest.A;
+
+            if (destAlpha <= 0)
+                return dest;
+            else if (destAlpha == 255)
+            {
+                return src;
+            }
+
+            var test = ((10 + (((10 + 128) >> 8) + 128)) >> 8);
+
+            double newalpha = destAlpha + DIVIDE_BY_255((255 - destAlpha)* src.A); // / 255.0;
+            int alpha255 = DIVIDE_BY_255(src.A * (255 - destAlpha)); //  /255.0;
+
+            var newAlpha = newalpha;
+            newalpha = 1.0/newalpha;
+
+            var red =  ((dest.R * destAlpha + (dest.R * alpha255)) * newalpha);
+            var green =  ((dest.G * destAlpha + (dest.G * alpha255)) * newalpha);
+            var blue =  ((dest.B * destAlpha + (dest.B * alpha255)) * newalpha);
+
+            return Color.FromArgb((int)newAlpha, (int)red, (int)green, (int)blue);
+
+        }
+
         public Color From0BGR(uint bgrColor)
         {
             // Get the color bytes
@@ -311,5 +387,11 @@ namespace DesktopSisters
             // Return the color from the byte array
             return Color.FromArgb(bytes[2], bytes[1], bytes[0]);
         }
+
+        public int DIVIDE_BY_255(int input)
+        {
+            return (input + (((input + 128) >> 8) + 128)) >> 8;
+        }
+
     }
 }
