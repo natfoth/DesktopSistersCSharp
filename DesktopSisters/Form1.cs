@@ -31,6 +31,7 @@ namespace DesktopSistersCSharpForm
             _config.Save();
 
             _sistersApp.UpdateConfig(_config);
+            _sistersApp.Update();
         }
 
         private static Configuration TryLoadConfig()

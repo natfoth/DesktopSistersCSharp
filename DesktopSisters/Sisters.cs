@@ -46,7 +46,7 @@ namespace DesktopSisters
             Update();
         }
 
-        private void Update()
+        public void Update()
         {
             TimeManager.Update();
             WallpaperManager.Update();
