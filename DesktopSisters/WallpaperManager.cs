@@ -6,6 +6,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -81,11 +82,19 @@ namespace DesktopSisters
             GenerateWallpaper();
         }
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 SystemParametersInfo(UInt32 uiAction, UInt32 uiParam, String pvParam, UInt32 fWinIni);
+        private static UInt32 SPI_SETDESKWALLPAPER = 20;
+        private static UInt32 SPIF_UPDATEINIFILE = 0x1;
+
         public void Save()
         {
             string tempPath = Path.GetTempPath();
+            string filePath = Path.Combine(tempPath, "WallpaperNew.bmp");
 
-            Wallpaper.Save(Path.Combine(tempPath, "Wallpaper.png"));
+            Wallpaper.Save(filePath);
+
+            SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
         }
 
         public void GenerateWallpaper()
@@ -95,15 +104,19 @@ namespace DesktopSisters
                 GenerateNightBackground();
                 GenerateNightSky();
                 GenerateNightForground();
-                GenerateCanvasEffect();
             }
 
             if (TimeManager.IsDayTime)
             {
                 GenerateDayBackground();
+                GenerateDaySky();
+                GenerateDayForground();
             }
+
+            GenerateCanvasEffect();
         }
 
+        #region Canvas Generation
         public void GenerateCanvasEffect()
         {
             var canvasResized = new Bitmap(ResW, ResH);
@@ -164,7 +177,9 @@ namespace DesktopSisters
             Benchmark.End();
             double miliseconds = Benchmark.GetMiliseconds();
         }
+        #endregion
 
+        #region Night Generation
         public void GenerateNightBackground()
         {
             var MoonX = TimeManager.MoonX;
@@ -268,10 +283,12 @@ namespace DesktopSisters
                 canvas.Save();
             }
         }
+        #endregion
 
         public void GenerateDayBackground()
         {
             var INNER_CIRCLE = 1000.0*ResW*1.0/1680.0;
+            //INNER_CIRCLE = 1000;
             var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
 
             var START_COLOR = Color.FromArgb(255, 251, 205);
@@ -299,14 +316,19 @@ namespace DesktopSisters
 
                     if (Dist < INNER_CIRCLE)
                     {
-                        if (Dist < 1300)
+                        var alphaToUse = Dist / INNER_CIRCLE;
+                        alphaToUse = (1.0 - alphaToUse) * 255.0;
+                        if (Dist < 50)
                         {
-                            int b123ob = 1;
+                            color = Color.Blue;
                         }
 
-                        var range = Dist / INNER_CIRCLE;
+                        //alphaToUse = 1;
+                        var testColor = Color.FromArgb((int) 255, START_COLOR.R, START_COLOR.G, START_COLOR.B);
 
-                        color = BlendColor(START_COLOR, INNER_COLOR, range);
+                        //color = Merge(INNER_COLOR, testColor);
+
+                        color = BlendColor(INNER_COLOR, testColor, alphaToUse / 255);
 
                         int bob = 1;
                     }
@@ -314,7 +336,7 @@ namespace DesktopSisters
                     {
                         var range = Math.Min((Dist - INNER_CIRCLE)*255.0/(INNER_CIRCLE + OUTER_CIRCLE), 1.0);
 
-                        color = BlendColor(INNER_COLOR, OUTER_COLOR, range);
+                        color = BlendColor(INNER_COLOR, OUTER_COLOR, 0);
 
                         int bob = 1;
                     }
@@ -326,6 +348,48 @@ namespace DesktopSisters
             wallpaperLockBitmap.UnlockBits();
             Benchmark.End();
             double miliseconds = Benchmark.GetMiliseconds();
+        }
+
+        public void GenerateDaySky()
+        {
+            using (var canvas = Graphics.FromImage(Wallpaper))
+            {
+                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                #region Clouds
+                canvas.DrawImageUnscaled(DayClouds[2], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)), -20);
+                canvas.DrawImageUnscaled(DayClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 220, -20);
+                canvas.DrawImageUnscaled(DayClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 400, -20);
+                #endregion
+
+                #region Sun
+
+                var sunX = TimeManager.SunX - (double)Sun.Width / 2.0;
+                var sunY = TimeManager.SunY - (double)Sun.Height / 2.0;
+
+                canvas.DrawImageUnscaled(Sun, (int)sunX, (int)sunY);
+                #endregion
+
+                canvas.Save();
+            }
+        }
+
+        public void GenerateDayForground()
+        {
+            using (var canvas = Graphics.FromImage(Wallpaper))
+            {
+                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                #region Landscape
+                canvas.DrawImage(Landscape, new Rectangle(0, ResH - Landscape.Height, ((int)((double)ResW)), Landscape.Height));
+                #endregion
+
+                #region Celestia
+                canvas.DrawImage(Celestia, new Rectangle(20, ResH - Celestia.Height - 10, Celestia.Width, Celestia.Height));
+                #endregion
+
+                canvas.Save();
+            }
         }
 
         public int Limit255(double val1)
@@ -354,28 +418,25 @@ namespace DesktopSisters
         public Color Merge(Color dest, Color src)
         {
 
-            int destAlpha = dest.A;
+            int srcAlpha = src.A;
 
-            if (destAlpha <= 0)
+            if (srcAlpha <= 0)
                 return dest;
-            else if (destAlpha == 255)
+            else if (srcAlpha == 255)
             {
                 return src;
             }
 
-            var test = ((10 + (((10 + 128) >> 8) + 128)) >> 8);
 
-            double newalpha = destAlpha + DIVIDE_BY_255((255 - destAlpha)* src.A); // / 255.0;
-            int alpha255 = DIVIDE_BY_255(src.A * (255 - destAlpha)); //  /255.0;
+            double newalpha = srcAlpha + (((255 - srcAlpha) * dest.A) / 255.0);// / 255.0;
+            int alpha255 = (int) ((dest.A * (255 - srcAlpha))/255.0);//  /255.0;
 
-            var newAlpha = newalpha;
-            newalpha = 1.0/newalpha;
 
-            var red =  ((dest.R * destAlpha + (dest.R * alpha255)) * newalpha);
-            var green =  ((dest.G * destAlpha + (dest.G * alpha255)) * newalpha);
-            var blue =  ((dest.B * destAlpha + (dest.B * alpha255)) * newalpha);
+            var red =  (byte)((src.R * srcAlpha + (dest.R * alpha255)) * newalpha);
+            var green = (byte)((src.G * srcAlpha + (dest.G * alpha255)) * newalpha);
+            var blue = (byte)((src.B * srcAlpha + (dest.B * alpha255)) * newalpha);
 
-            return Color.FromArgb((int)newAlpha, (int)red, (int)green, (int)blue);
+            return Color.FromArgb(255, (int)red, (int)green, (int)blue);
 
         }
 
@@ -394,4 +455,35 @@ namespace DesktopSisters
         }
 
     }
+
+   /* public static class DesktopSisterExtensions
+    {
+        public static void Merge(this Color color, Color src)
+        {
+            int destAlpha = color.A;
+
+            if (destAlpha <= 0)
+                return;
+            else if (destAlpha == 255)
+            {
+                return;
+            }
+            double newalpha = destAlpha + DIVIDE_BY_255((255 - destAlpha) * src.A); // / 255.0;
+            int alpha255 = DIVIDE_BY_255(src.A * (255 - destAlpha)); //  /255.0;
+
+            var newAlpha = newalpha;
+            newalpha = 1.0 / newalpha;
+
+            var red = ((color.R * destAlpha + (color.R * alpha255)) * newalpha);
+            var green = ((color.G * destAlpha + (color.G * alpha255)) * newalpha);
+            var blue = ((color.B * destAlpha + (color.B * alpha255)) * newalpha);
+
+            color = Color.FromArgb((int)newAlpha, (int)red, (int)green, (int)blue);
+        }
+
+        public static int DIVIDE_BY_255(int input)
+        {
+            return (input + (((input + 128) >> 8) + 128)) >> 8;
+        }
+    }*/
 }
