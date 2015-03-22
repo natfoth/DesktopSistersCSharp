@@ -29,7 +29,7 @@ namespace DesktopSisters
             }
             catch (HandledFatalException ex)
             {
-                WriteExceptionFailureMessage(ex, ex.Messages);
+                WriteExceptionFailureMessage(ex.Exception, ex.Messages);
                 Console.ReadLine();
             }
             catch (Exception ex)
