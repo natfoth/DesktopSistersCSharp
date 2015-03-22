@@ -74,12 +74,13 @@ namespace DesktopSisters
             Wallpaper = new Bitmap(ResW, ResH);
 
             
-            GenerateWallpaper();
+            Update();
         }
 
         public void Update()
         {
             GenerateWallpaper();
+            Save();
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]

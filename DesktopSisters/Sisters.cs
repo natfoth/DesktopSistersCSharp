@@ -21,7 +21,6 @@ namespace DesktopSisters
 
             WallpaperManager = new WallpaperManager(TimeManager);
             WallpaperManager.Init();
-            WallpaperManager.Save();
 
 
             _pulse = new System.Windows.Forms.Timer();
