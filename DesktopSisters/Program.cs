@@ -1,42 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DesktopSisters;
 
-namespace DesktopSisters
+namespace DesktopSistersCSharpForm
 {
-    class Program
+    static class Program
     {
-        private static void Main(string[] args)
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            try
-            {
-                var app = new Sisters(TryLoadConfig());
-                app.Start();
-                Console.WriteLine();
-                Console.WriteLine("The Program has finished");
-                Console.WriteLine("Press enter to close....");
-                Console.ReadLine();
-            }
-            catch (HandledFatalException ex)
-            {
-                WriteExceptionFailureMessage(ex.Exception, ex.Messages);
-                Console.ReadLine();
-            }
-            catch (Exception ex)
-            {
-                WriteExceptionFailureMessage(ex, "There was an Unhandled Fatal Error!");
-            }
+            var app = new Sisters(TryLoadConfig());
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+
+            
         }
 
         private static Configuration TryLoadConfig()
