@@ -113,6 +113,8 @@ namespace DesktopSisters
                 canvas.DrawImage(Canvas, new Rectangle(0, 0, Wallpaper.Width, Wallpaper.Height));
                 canvas.Save();
             }
+
+
         }
 
         public void GenerateNightBackground()
