@@ -1,11 +1,13 @@
 using System;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace DesktopSisters
 {
     public class Sisters
     {
         private readonly Configuration _config;
+        private readonly Form _window;
 
         public TimeManager TimeManager;
         public WallpaperManager WallpaperManager;
@@ -13,9 +15,11 @@ namespace DesktopSisters
 
         private System.Windows.Forms.Timer _pulse;
 
-        public Sisters(Configuration config)
+        public Sisters(Configuration config, Form window)
         {
             _config = config;
+            _window = window;
+
             TimeManager = new TimeManager(_config.Coordinates);
             TimeManager.Update();
 

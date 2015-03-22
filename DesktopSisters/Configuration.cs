@@ -19,8 +19,9 @@ namespace DesktopSisters
 
         public string Coordinates { get; set; } = "";
 
+        public bool UseNewArtStyle { get; set; } = true;
 
-#region Load & Save
+        #region Load & Save
         public static Configuration LoadConfig(string path)
         {
             if (!File.Exists(path))
