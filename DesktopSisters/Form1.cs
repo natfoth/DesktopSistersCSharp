@@ -14,17 +14,23 @@ namespace DesktopSistersCSharpForm
     public partial class Form1 : Form
     {
         private Sisters _sistersApp;
+        private readonly Configuration _config;
         public Form1()
         {
             InitializeComponent();
 
-            _sistersApp = new Sisters(TryLoadConfig(), this);
+            _config = TryLoadConfig();
+            _sistersApp = new Sisters(_config, this);
 
+            useNewArtCheckbox.Checked = _config.UseNewArtStyle;
         }
 
         private void useNewArtCheckbox_CheckedChanged(object sender, EventArgs e)
         {
+            _config.UseNewArtStyle = useNewArtCheckbox.Checked;
+            _config.Save();
 
+            _sistersApp.UpdateConfig(_config);
         }
 
         private static Configuration TryLoadConfig()

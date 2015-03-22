@@ -6,7 +6,7 @@ namespace DesktopSisters
 {
     public class Sisters
     {
-        private readonly Configuration _config;
+        private Configuration _config;
         private readonly Form _window;
 
         public TimeManager TimeManager;
@@ -23,7 +23,7 @@ namespace DesktopSisters
             TimeManager = new TimeManager(_config.Coordinates);
             TimeManager.Update();
 
-            WallpaperManager = new WallpaperManager(TimeManager);
+            WallpaperManager = new WallpaperManager(TimeManager, _config);
             WallpaperManager.Init();
 
 
@@ -50,6 +50,12 @@ namespace DesktopSisters
         {
             TimeManager.Update();
             WallpaperManager.Update();
+        }
+
+        public void UpdateConfig(Configuration config)
+        {
+            _config = config;
+            WallpaperManager.UpdateConfig(config);
         }
         
     }

@@ -7,7 +7,7 @@ namespace DesktopSisters
 {
     public class Configuration
     {
-        private readonly string _path;
+        private string _path;
 
         // ReSharper disable once UnusedMember.Local
         private Configuration(){}
@@ -26,11 +26,14 @@ namespace DesktopSisters
         {
             if (!File.Exists(path))
             {
+                
                 return CreateDefaultConfig(path);
             }
             else
             {
-                return JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+                var config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
+                config._path = path;
+                return config;
             }
         }
 

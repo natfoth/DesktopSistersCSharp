@@ -16,9 +16,12 @@ namespace DesktopSisters
 {
     public class WallpaperManager
     {
-        public WallpaperManager(TimeManager timeManager)
+        private Configuration _config;
+
+        public WallpaperManager(TimeManager timeManager, Configuration config)
         {
             TimeManager = timeManager;
+            _config = config;
         }
 
         public TimeManager TimeManager;
@@ -45,6 +48,7 @@ namespace DesktopSisters
 
         public void Init()
         {
+
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (directory == null)
@@ -52,19 +56,19 @@ namespace DesktopSisters
 
             Canvas = Image.FromFile(Path.Combine(directory, "CanvasTexture.jpg"));
 
-            Luna = Image.FromFile(Path.Combine(directory, "Night/Luna.png"));
-            Moon = Image.FromFile(Path.Combine(directory, "Night/Moon.png"));
-            LandscapeNight = Image.FromFile(Path.Combine(directory, "Night/LandscapeNight.png"));
-            Stars = Image.FromFile(Path.Combine(directory, "Night/Stars.png"));
-            FallingStar = Image.FromFile(Path.Combine(directory, "Night/FallingStar.png"));
-            NightClouds = new Image[3] { Image.FromFile(Path.Combine(directory, "Night/NightCloud1.png")), Image.FromFile(Path.Combine(directory, "Night/NightCloud2.png")), Image.FromFile(Path.Combine(directory, "Night/NightCloud3.png")) };
-            Triangle = Image.FromFile(Path.Combine(directory, "Night/Triangle.png"));
+            Luna = LoadNightImage("Luna.png");
+            Moon = LoadNightImage("Moon.png");
+            LandscapeNight = LoadNightImage("LandscapeNight.png");
+            Stars = LoadNightImage("Stars.png");
+            FallingStar = LoadNightImage("FallingStar.png");
+            NightClouds = new Image[3] { LoadNightImage("NightCloud1.png"), LoadNightImage("NightCloud2.png"), LoadNightImage("NightCloud3.png") };
+            Triangle = LoadNightImage("Triangle.png");
 
 
-            Celestia = Image.FromFile(Path.Combine(directory, "Day/Celestia.png"));
-            Sun = Image.FromFile(Path.Combine(directory, "Day/Sun.png"));
-            Landscape = Image.FromFile(Path.Combine(directory, "Day/Landscape.png"));
-            DayClouds = new Image[3] { Image.FromFile(Path.Combine(directory, "Day/DayCloud1.png")), Image.FromFile(Path.Combine(directory, "Day/DayCloud2.png")), Image.FromFile(Path.Combine(directory, "Day/DayCloud3.png")) };
+            Celestia = LoadDayImage("Celestia.png");
+            Sun = LoadDayImage("Sun.png");
+            Landscape = LoadDayImage("Landscape.png");
+            DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
@@ -77,10 +81,46 @@ namespace DesktopSisters
             Update();
         }
 
+        public Image LoadDayImage(String name)
+        {
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (directory == null)
+                return null;
+
+            var imageLocationName = String.Format("Day/Traditional/{0}", name);
+            if (_config.UseNewArtStyle)
+                imageLocationName = String.Format("Day/New/{0}", name);
+
+
+            return Image.FromFile(Path.Combine(directory, imageLocationName));
+        }
+
+        public Image LoadNightImage(String name)
+        {
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (directory == null)
+                return null;
+
+            var imageLocationName = String.Format("Night/Traditional/{0}", name);
+            if (_config.UseNewArtStyle)
+                imageLocationName = String.Format("Night/New/{0}", name);
+
+
+            return Image.FromFile(Path.Combine(directory, imageLocationName));
+        }
+
+
         public void Update()
         {
             GenerateWallpaper();
             Save();
+        }
+
+        public void UpdateConfig(Configuration config)
+        {
+            _config = config;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
