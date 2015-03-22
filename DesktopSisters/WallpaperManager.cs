@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -93,11 +94,24 @@ namespace DesktopSisters
             {
                 GenerateNightBackground();
                 GenerateNightSky();
+                GenerateNightForground();
             }
 
             if (TimeManager.IsDayTime)
             {
                 GenerateDayBackground();
+            }
+        }
+
+        public void GenerateCanvasEffect()
+        {
+            var canvasResized = new Bitmap(ResW, ResH);
+
+            using (var canvas = Graphics.FromImage(canvasResized)) // resize the canvas to fit the wallpaper size
+            {
+                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                canvas.DrawImage(Canvas, new Rectangle(0, 0, Wallpaper.Width, Wallpaper.Height));
+                canvas.Save();
             }
         }
 
@@ -137,15 +151,9 @@ namespace DesktopSisters
             {
                 for (int x = 0; x < wallpaperLockBitmap.Width; x++)
                 {
-                    if (x > 2000)
-                    {
-                        int bob = 1;
-                    }
-
-                    var Base = BlendColor(BG_COLOR, HORIZON_COLOR, (double)y /(double)ResH);
-                    var Night = BlendColor(BLEED_COLOR, NIGHT_COLOR, ((double)(Math.Max(x - ResW + BleedWidth, 0)))/ (double)BleedWidth);
-                    var BG = BlendColor(Base, Night, Night.R / 255.0f);
-
+                    var Base = BlendColor(BG_COLOR, HORIZON_COLOR, (double) y/(double) ResH);
+                    var Night = BlendColor(BLEED_COLOR, NIGHT_COLOR, ((double) (Math.Max(x - ResW + BleedWidth, 0)))/(double) BleedWidth);
+                    var BG = BlendColor(Base, Night, Night.R/255.0f);
 
                     wallpaperLockBitmap.SetPixel(x, y, BG);
                 }
@@ -162,10 +170,51 @@ namespace DesktopSisters
             using (var canvas = Graphics.FromImage(Wallpaper))
             {
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                #region Stars
+                canvas.DrawImage(Stars, new Rectangle(10, 50, ((int)((double)ResW)), (ResH)));
+                #endregion
+
+                #region Clouds
+                canvas.DrawImageUnscaled(NightClouds[2], (int) (ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)), -20);
+                canvas.DrawImageUnscaled(NightClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 220, -20);
+                canvas.DrawImageUnscaled(NightClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, -20);
+                #endregion
+
+                #region Falling Star
+                canvas.DrawImageUnscaled(FallingStar, (int) ((double)TimeManager.NightRatio * (double)ResW) + 500, 200);
+                #endregion
+
+                #region Triangle
+                canvas.DrawImageUnscaled(Triangle, (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
+                #endregion
+
+                #region Moon
+
                 var moonX = TimeManager.MoonX - (double) Moon.Width/2.0;
                 var moonY = TimeManager.MoonY - (double)Moon.Height / 2.0;
 
                 canvas.DrawImageUnscaled(Moon, (int) moonX, (int) moonY);
+                #endregion
+
+                canvas.Save();
+            }
+        }
+
+        public void GenerateNightForground()
+        {
+            using (var canvas = Graphics.FromImage(Wallpaper))
+            {
+                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                #region Landscape
+                canvas.DrawImage(LandscapeNight, new Rectangle(0, ResH - LandscapeNight.Height, ((int)((double)ResW)), LandscapeNight.Height));
+                #endregion
+
+                #region Luna
+                canvas.DrawImage(Luna, new Rectangle(20, ResH - Luna.Height - 10, Luna.Width, Luna.Height));
+                #endregion
+
                 canvas.Save();
             }
         }
