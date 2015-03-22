@@ -27,8 +27,9 @@ namespace DesktopSisters
                 Console.WriteLine("Press enter to close....");
                 Console.ReadLine();
             }
-            catch (HandledFatalException)
+            catch (HandledFatalException ex)
             {
+                WriteExceptionFailureMessage(ex.Exception, ex.Messages);
                 Console.ReadLine();
             }
             catch (Exception ex)
@@ -46,8 +47,7 @@ namespace DesktopSisters
             }
             catch (Exception ex)
             {
-                WriteExceptionFailureMessage(ex, "There was a Fatal Error Reading your Configuration File!");
-                throw new HandledFatalException();
+                throw new HandledFatalException(ex, "There was a Fatal Error Reading your Configuration File!");
             }
         }
 
@@ -68,5 +68,16 @@ namespace DesktopSisters
         }
     }
 
-    public class HandledFatalException : Exception {}
+    public class HandledFatalException : Exception
+    {
+        public HandledFatalException(Exception ex, params string[] messages)
+        {
+            Exception = ex;
+            Messages = messages;
+        }
+
+        public Exception Exception { get; set; }
+
+        public string[] Messages { get; set; }
+    }
 }

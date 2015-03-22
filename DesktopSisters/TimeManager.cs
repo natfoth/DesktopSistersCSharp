@@ -44,8 +44,6 @@ namespace DesktopSisters
 
         public void Update()
         {
-            //var lat = Util.ConvertDegree("33°35'N");
-            //var longi = Util.ConvertDegree("86°50'W");
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
