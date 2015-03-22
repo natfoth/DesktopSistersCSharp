@@ -60,7 +60,6 @@ namespace DesktopSisters
             Console.WriteLine("Please read the error below,");
             Console.WriteLine("If you feel it is a bug please report to:");
             Console.WriteLine("http://www.github.com/natfoth/DesktopSistersCSharp/issues");
-            Console.WriteLine("");
             Console.WriteLine("=========================================================");
             Console.WriteLine("");
             Console.WriteLine("Excecption details:");
