@@ -61,5 +61,18 @@ namespace DesktopSistersCSharpForm
             Console.WriteLine("");
             Console.WriteLine(ex.ToString());
         }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            System.Diagnostics.Process.Start("https://www.google.de/#q=New%20York%20City%20Latitude");
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            _config.Coordinates = textBox1.Text;
+            _config.Save();
+
+            _sistersApp.UpdateConfig(_config);
+            _sistersApp.Update();
+        }
     }
 }

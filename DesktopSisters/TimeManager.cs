@@ -26,18 +26,24 @@ namespace DesktopSisters
         private double _latitude;
         private double _longitude;
 
-        private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)° (?<latC>[NS]), (?<long>\d\d[.][\d]+)° (?<longC>[EW])", RegexOptions.Compiled);
+        private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)[^0-9] (?<latC>[NS]), (?<long>\d\d[.][\d]+)[^0-9] (?<longC>[EW])", RegexOptions.Compiled);
 
-        public TimeManager(string latLong)
+        public TimeManager(Configuration config)
         {
-            if (latLong != null) {
+            UpdateConfig(config);
+        }
+
+        public void UpdateLatLong(string latLong)
+        {
+            if (latLong != null)
+            {
                 Tuple<string, string> parsed = GetGoogleLatLong(latLong);
 
-                if (parsed != null) {
+                if (parsed != null)
+                {
                     _latitude = Util.ConvertDegree(parsed.Item1);
                     _longitude = Util.ConvertDegree(parsed.Item2);
-                    Console.WriteLine(_latitude);
-                    Console.WriteLine(_longitude);
+                    Console.WriteLine(IsTwilight);
                 }
             }
         }
@@ -66,9 +72,17 @@ namespace DesktopSisters
         }
 
 
-        public bool IsTwilight => Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60;
+        public bool IsTwilight
+        {
+            get
+            {
+                var dateTime = DateTime.Now;//DateTime.Parse("06:30");
+                var sunPos = SunPosition.CalculateSunPosition(dateTime, _latitude, _longitude);
+                return (sunPos.Item2 > -6 && sunPos.Item2 < 0);
+            }
+        }//Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60
 
-        public bool IsNightTime => (DateTime.Now - SunSet).TotalSeconds > 0;
+        public bool IsNightTime => (DateTime.Now - SunRise).TotalSeconds < 0 || (DateTime.Now - SunSet).TotalSeconds > 0;
 
         public bool IsDayTime => !IsNightTime;
 
@@ -144,6 +158,11 @@ namespace DesktopSisters
             }
 
             var test = IsDayTime;
+        }
+
+        public void UpdateConfig(Configuration config)
+        {
+            UpdateLatLong(config.Coordinates);
         }
     }
 }

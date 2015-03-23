@@ -20,7 +20,7 @@ namespace DesktopSisters
             _config = config;
             _window = window;
 
-            TimeManager = new TimeManager(_config.Coordinates);
+            TimeManager = new TimeManager(_config);
             TimeManager.Update();
 
             WallpaperManager = new WallpaperManager(TimeManager, _config);
@@ -56,6 +56,7 @@ namespace DesktopSisters
         {
             _config = config;
             WallpaperManager.UpdateConfig(config);
+            TimeManager.UpdateConfig(config);
         }
         
     }

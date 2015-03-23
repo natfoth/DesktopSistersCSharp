@@ -22,7 +22,7 @@ namespace DesktopSisters.Utils
          * \param latitude Latitude expressed in decimal degrees. 
          * \param longitude Longitude expressed in decimal degrees. 
          */
-        public static void CalculateSunPosition(
+        public static Tuple<double, double> CalculateSunPosition(
             DateTime dateTime, double latitude, double longitude) {
             // Convert to UTC  
             dateTime = dateTime.ToUniversalTime();
@@ -104,6 +104,8 @@ namespace DesktopSisters.Utils
 
             // Azimut  
             Console.WriteLine("Azimuth: " + azimuth * Rad2Deg);
+
+            return new Tuple<double, double>(altitude * Rad2Deg, azimuth * Rad2Deg);
         }
 
         /*! 
