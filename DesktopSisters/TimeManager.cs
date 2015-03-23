@@ -139,7 +139,7 @@ namespace DesktopSisters
 
             SunSet = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
 
-            double currentTimeDec = Double.Parse(String.Format("{0}.{1}", date.Hour, date.Minute));
+            double currentTimeDec = Double.Parse(String.Format("{0}.{1:00}", date.Hour, date.Minute));
             double sunRiseTimeDec = Double.Parse(sunriseString.Replace(":", "."));
             double sunSetTimeDec = Double.Parse(sunsetString.Replace(":", "."));
 
@@ -152,8 +152,8 @@ namespace DesktopSisters
             if (currentTimeDec > sunSetTimeDec && currentTimeDec > 15)
             {
                 var amountToSub = currentTimeDec - sunSetTimeDec;
-                currentTimeDec = 0 - amountToSub;
-                NightRatio = (currentTimeDec - startingSunRise) / (sunRiseTimeDec - startingSunRise);
+
+                NightRatio = amountToSub / 12;
             }
 
             var test = IsDayTime;

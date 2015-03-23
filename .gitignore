@@ -196,3 +196,7 @@ FakesAssemblies/
 *.opt
 /DesktopSisters.sln.ide
 /DesktopSisters.v14.suo
+/DesktopSisters/Day/New/Thumbs.db
+/DesktopSisters/Night/New/Thumbs.db
+/DesktopSisters/Night/Traditional/Thumbs.db
+/DesktopSisters/Thumbs.db

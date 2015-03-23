@@ -202,9 +202,11 @@ namespace DesktopSisters
                         blue = Limit255(255 - (2 * (255 - blend.B) * (255 - src.B)) / 255);
 
 
-                    alpha = Limit255(((double)src.A * (double)blend.A) / 255.0f);
+                    alpha = 255;
 
                     var newColor = Color.FromArgb(alpha, red, green, blue);
+
+                    newColor = Merge(src, newColor, 0.65);
 
                    // var dest = src;
                    // dest = Merge(dest, newColor);
@@ -223,6 +225,10 @@ namespace DesktopSisters
         #region Night Generation
         public void GenerateNightBackground()
         {
+            var INNER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
+            INNER_CIRCLE = 500;
+            var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
+
             var MoonX = TimeManager.MoonX;
             var MoonY = TimeManager.MoonY;
 
@@ -250,18 +256,34 @@ namespace DesktopSisters
             var wallpaperLockBitmap = new LockBitmap(Wallpaper);
             wallpaperLockBitmap.LockBits();
 
-            var SunX = TimeManager.SunX;
-            var SunY = TimeManager.SunY;
-
             for (int y = 0; y < wallpaperLockBitmap.Height; y++)
             {
                 for (int x = 0; x < wallpaperLockBitmap.Width; x++)
                 {
+                    var Dist = Math.Sqrt((MoonX - x) * (MoonX - x) + (MoonY - y) * (MoonY - y));
+
                     var Base = BlendColor(BG_COLOR, HORIZON_COLOR, (double) y/(double) ResH);
                     var Night = BlendColor(BLEED_COLOR, NIGHT_COLOR, ((double) (Math.Max(x - ResW + BleedWidth, 0)))/(double) BleedWidth);
                     var BG = BlendColor(Base, Night, Night.R/255.0f);
 
-                    wallpaperLockBitmap.SetPixel(x, y, BG);
+                    var color = BG;
+                    if (Dist < INNER_CIRCLE)
+                    {
+                        var alphaToUse = Dist / INNER_CIRCLE;
+                        alphaToUse = (1.0 - alphaToUse) * 255.0;
+                        if (Dist < 50)
+                        {
+                            color = Color.Red;
+                        }
+
+                        //color = Merge(INNER_COLOR, testColor);
+
+                        color = BlendColor(BG, Color.FromArgb(255, 255, 255, 255), (alphaToUse / 255) * 0.2);
+
+                        int bob = 1;
+                    }
+
+                    wallpaperLockBitmap.SetPixel(x, y, color);
                 }
             }
 
@@ -456,10 +478,10 @@ namespace DesktopSisters
             return Color.FromArgb(alpha, red, green, blue);
         }
 
-        public Color Merge(Color dest, Color src)
+        public Color Merge(Color dest, Color src, double opacity = 1.0)
         {
 
-            int srcAlpha = src.A;
+            int srcAlpha = (int) (src.A * opacity);
 
             if (srcAlpha <= 0)
                 return dest;
@@ -472,10 +494,11 @@ namespace DesktopSisters
             double newalpha = srcAlpha + (((255 - srcAlpha) * dest.A) / 255.0);// / 255.0;
             int alpha255 = (int) ((dest.A * (255 - srcAlpha))/255.0);//  /255.0;
 
+            newalpha = 1.0 / newalpha;
 
-            var red =  (byte)((src.R * srcAlpha + (dest.R * alpha255)) * newalpha);
-            var green = (byte)((src.G * srcAlpha + (dest.G * alpha255)) * newalpha);
-            var blue = (byte)((src.B * srcAlpha + (dest.B * alpha255)) * newalpha);
+            var red =  ((src.R * srcAlpha + (dest.R * alpha255)) * newalpha);
+            var green = ((src.G * srcAlpha + (dest.G * alpha255)) * newalpha);
+            var blue = ((src.B * srcAlpha + (dest.B * alpha255)) * newalpha);
 
             return Color.FromArgb(255, (int)red, (int)green, (int)blue);
 
