@@ -252,9 +252,10 @@ namespace DesktopSisters
             var BLEED_COLOR = Color.FromArgb(52, 50, 101);
             var SHINE_COLOR = Color.FromArgb(64, 255, 255, 255);
 
-            if (!TimeManager.IsTwilight) {
-                BG_COLOR = Color.FromArgb(102, 102, 204);
-                HORIZON_COLOR = Color.FromArgb(255, 200, 178);
+            if (TimeManager.IsTwilight) {
+                var item1 = TimeManager.GetSunPos().Item1;
+                BG_COLOR = BlendColor(Color.FromArgb(102, 102, 204), BG_COLOR, (item1/-6));
+                HORIZON_COLOR = BlendColor(Color.FromArgb(255, 200, 178), HORIZON_COLOR, (item1 / -6));
             }
             /* var BG_COLOR = 0xFF504D9d;
              var HORIZON_COLOR = 0xFF4D919D;
@@ -304,6 +305,19 @@ namespace DesktopSisters
             Benchmark.End();
             double miliseconds = Benchmark.GetMiliseconds();
 
+        }
+
+        /// <summary>Blends the specified colors together.</summary>
+        /// <param name="color">Color to blend onto the background color.</param>
+        /// <param name="backColor">Color to blend the other color onto.</param>
+        /// <param name="amount">How much of <paramref name="color"/> to keep,
+        /// “on top of” <paramref name="backColor"/>.</param>
+        /// <returns>The blended colors.</returns>
+        public static Color Blend(Color color, Color backColor, double amount) {
+            byte r = (byte)((color.R * amount) + backColor.R * (1 - amount));
+            byte g = (byte)((color.G * amount) + backColor.G * (1 - amount));
+            byte b = (byte)((color.B * amount) + backColor.B * (1 - amount));
+            return Color.FromArgb(r, g, b);
         }
 
         public void GenerateNightSky()

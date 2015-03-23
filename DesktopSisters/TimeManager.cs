@@ -76,10 +76,17 @@ namespace DesktopSisters
         {
             get
             {
-                var sunPos = SunPosition.CalculateSunPosition(DateTime.Now, _latitude, _longitude);
+                var sunPos = GetSunPos();
                 return (sunPos.Item1 > -6 && sunPos.Item1 < 0);
             }
-        }//Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60
+        }
+
+        public Tuple<double, double> GetSunPos()
+        {
+            return SunPosition.CalculateSunPosition(DateTime.Now, _latitude, _longitude);
+        }
+
+//Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60
 
         public bool IsNightTime => (DateTime.Now - SunRise).TotalSeconds < 0 || (DateTime.Now - SunSet).TotalSeconds > 0;
 
