@@ -133,7 +133,14 @@ namespace DesktopSisters
             string tempPath = Path.GetTempPath();
             string filePath = Path.Combine(tempPath, "WallpaperNew.bmp");
 
-            Wallpaper.Save(filePath);
+            try
+            {
+                Wallpaper.Save(filePath);
+            }
+            catch
+            {
+            }
+            
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
         }
@@ -360,10 +367,10 @@ namespace DesktopSisters
             //INNER_CIRCLE = 1000;
             var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
 
-            var START_COLOR = Color.FromArgb(255, 251, 205);
-            var INNER_COLOR = Color.FromArgb(255, 221, 205);
+            var START_COLOR = Color.FromArgb(255, 243, 102);
+            var INNER_COLOR = Color.FromArgb(255, 166, 124);
             var OUTER_COLOR = Color.FromArgb(255, 200, 178);
-            var RAY_COLOR = Color.FromArgb(255, 255, 210);
+            var RAY_COLOR = Color.FromArgb(255, 255, 159);
 
             
 
