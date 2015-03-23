@@ -23,6 +23,7 @@ namespace DesktopSistersCSharpForm
             _sistersApp = new Sisters(_config, this);
 
             useNewArtCheckbox.Checked = _config.UseNewArtStyle;
+            textBox1.Text = _config.Coordinates;
         }
 
         private void useNewArtCheckbox_CheckedChanged(object sender, EventArgs e)

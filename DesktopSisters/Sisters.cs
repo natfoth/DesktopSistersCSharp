@@ -13,7 +13,7 @@ namespace DesktopSisters
         public WallpaperManager WallpaperManager;
 
 
-        private System.Windows.Forms.Timer _pulse;
+        private System.Timers.Timer _pulse;
 
         public Sisters(Configuration config, Form window)
         {
@@ -27,8 +27,8 @@ namespace DesktopSisters
             WallpaperManager.Init();
 
 
-            _pulse = new System.Windows.Forms.Timer();
-            _pulse.Tick += new EventHandler(Pulse);
+            _pulse = new System.Timers.Timer();
+            _pulse.Elapsed += Pulse;
             _pulse.Interval = 30 * 1000; // in miliseconds
             _pulse.Start();
         }
