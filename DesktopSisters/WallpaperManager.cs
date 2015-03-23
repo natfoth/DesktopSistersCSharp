@@ -236,13 +236,19 @@ namespace DesktopSisters
             //77, 145, 157
             //114, 49, 187
             //52, 50, 101
-
+            //102, 102, 204
             var BG_COLOR = Color.FromArgb(80, 77, 157);
+            
+                
             var HORIZON_COLOR = Color.FromArgb(77, 145, 157);
             var NIGHT_COLOR = Color.FromArgb(114, 49, 187);
             var BLEED_COLOR = Color.FromArgb(52, 50, 101);
             var SHINE_COLOR = Color.FromArgb(64, 255, 255, 255);
 
+            if (!TimeManager.IsTwilight) {
+                BG_COLOR = Color.FromArgb(102, 102, 204);
+                HORIZON_COLOR = Color.FromArgb(255, 200, 178);
+            }
             /* var BG_COLOR = 0xFF504D9d;
              var HORIZON_COLOR = 0xFF4D919D;
              var NIGHT_COLOR = 0xAA7231BB;
