@@ -76,9 +76,8 @@ namespace DesktopSisters
         {
             get
             {
-                var dateTime = DateTime.Now;//DateTime.Parse("06:30");
-                var sunPos = SunPosition.CalculateSunPosition(dateTime, _latitude, _longitude);
-                return (sunPos.Item2 > -6 && sunPos.Item2 < 0);
+                var sunPos = SunPosition.CalculateSunPosition(DateTime.Now, _latitude, _longitude);
+                return (sunPos.Item1 > -6 && sunPos.Item1 < 0);
             }
         }//Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60
 
