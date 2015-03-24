@@ -29,10 +29,11 @@ namespace DesktopSisters
 
             _pulse = new System.Timers.Timer();
             _pulse.Elapsed += Pulse;
-            _pulse.Interval = 30 * 1000; // in miliseconds
+            _pulse.Interval = 5 * 1000; // in miliseconds
             _pulse.Start();
         }
 
+        private bool _alreadyProcessing = false;
         private void Start()
         {
             TimeManager.Update();
@@ -40,10 +41,15 @@ namespace DesktopSisters
 
         private void Pulse(object sender, EventArgs e)
         {
-            _pulse.Stop();
-            _pulse.Start();
+            if (_alreadyProcessing)
+                return;
+            _alreadyProcessing = true;
+            //_pulse.Stop();
+            //_pulse.Start();
 
             Update();
+
+            _alreadyProcessing = false;
         }
 
         public void Update()
