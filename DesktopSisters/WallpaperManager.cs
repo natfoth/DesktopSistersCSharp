@@ -136,14 +136,8 @@ namespace DesktopSisters
 
         public void Update()
         {
-            try {
-                GenerateWallpaper();
-                Save();
-
-            }
-            catch
-            {
-            }
+            GenerateWallpaper();
+            Save();
         }
 
         public void UpdateConfig(Configuration config)
@@ -269,12 +263,8 @@ namespace DesktopSisters
 
             if (TimeManager.IsTwilight) {
                 var item1 = TimeManager.GetSunPos().Item1;
-                var firstColor = DayColors.StartColor;//Color.FromArgb(102, 102, 204);
-                var fromArgb = DayColors.InnerColor;//Color.FromArgb(255, 200, 178);
-
-                nightColors.BackgroundColor = fromArgb; //BlendColor(firstColor, nightColors.BackgroundColor, (item1/-6));
-                nightColors.HorizonColor = firstColor; //BlendColor(fromArgb, nightColors.HorizonColor, (item1 / -6));
-                nightColors.BleedColor = fromArgb;
+                nightColors.BackgroundColor = BlendColor(Color.FromArgb(102, 102, 204), nightColors.BackgroundColor, (item1/-6));
+                nightColors.HorizonColor = BlendColor(Color.FromArgb(255, 200, 178), nightColors.HorizonColor, (item1 / -6));
             }
 
             var moonshineRadius = Moon.Width/2;
@@ -360,20 +350,14 @@ namespace DesktopSisters
 
                 #region Moon
 
-                DrawMoon(canvas);
+                var moonX = TimeManager.MoonX - (double) Moon.Width/2.0;
+                var moonY = TimeManager.MoonY - (double)Moon.Height / 2.0;
 
+                canvas.DrawImageUnscaled(Moon, (int) moonX, (int) moonY);
                 #endregion
 
                 canvas.Save();
             }
-        }
-
-        private void DrawMoon(Graphics canvas)
-        {
-            var moonX = TimeManager.MoonX - (double) Moon.Width/2.0;
-            var moonY = TimeManager.MoonY - (double) Moon.Height/2.0;
-
-            canvas.DrawImageUnscaled(Moon, (int) moonX, (int) moonY);
         }
 
         public void GenerateNightForground()
@@ -389,11 +373,6 @@ namespace DesktopSisters
                 #region Luna
                 canvas.DrawImage(Luna, new Rectangle(20, ResH - Luna.Height - 10, Luna.Width, Luna.Height));
                 #endregion
-
-                if (TimeManager.IsTwilight)
-                {
-                    DrawSun(canvas);
-                }
 
                 canvas.Save();
             }
@@ -471,22 +450,14 @@ namespace DesktopSisters
 
                 #region Sun
 
-                DrawSun(canvas);
-                if(TimeManager.IsPrePostTwilight)
-                    DrawMoon(canvas);
+                var sunX = TimeManager.SunX - (double)Sun.Width / 2.0;
+                var sunY = TimeManager.SunY - (double)Sun.Height / 2.0;
 
+                canvas.DrawImageUnscaled(Sun, (int)sunX, (int)sunY);
                 #endregion
 
                 canvas.Save();
             }
-        }
-
-        private void DrawSun(Graphics canvas)
-        {
-            var sunX = TimeManager.SunX - (double) Sun.Width/2.0;
-            var sunY = TimeManager.SunY - (double) Sun.Height/2.0;
-
-            canvas.DrawImageUnscaled(Sun, (int) sunX, (int) sunY);
         }
 
         public void GenerateDayForground()

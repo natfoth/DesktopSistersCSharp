@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DesktopSisters.Utils;
-using DesktopSistersCSharpForm;
 
 namespace DesktopSisters
 {
@@ -29,11 +28,8 @@ namespace DesktopSisters
 
         private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)[^0-9] (?<latC>[NS]), (?<long>\d\d[.][\d]+)[^0-9] (?<longC>[EW])", RegexOptions.Compiled);
 
-
         public TimeManager(Configuration config)
         {
-            _dateTime = DateTime.Parse("6:00 pm");
-            _lastRealTime = DateTime.Now;
             UpdateConfig(config);
         }
 
@@ -52,20 +48,13 @@ namespace DesktopSisters
             }
         }
 
-        private DateTime _dateTime;
-        private DateTime _lastRealTime;
-
         public void Update()
         {
-            var timeSpan = DateTime.Now.Subtract(_lastRealTime);
-            _dateTime = _dateTime.AddMinutes(5);
-            _lastRealTime = DateTime.Now;
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
             SetSunCycleRatio(_latitude, _longitude);
             CalculateSunPosition();
-
         }
 
 
@@ -92,21 +81,14 @@ namespace DesktopSisters
             }
         }
 
-        public bool IsPrePostTwilight {
-            get {
-                var sunPos = GetSunPos();
-                return (sunPos.Item1 < 6 && sunPos.Item1 > 0);
-            }
-        }
-
         public Tuple<double, double> GetSunPos()
         {
-            return SunPosition.CalculateSunPosition(_dateTime, _latitude, _longitude);
+            return SunPosition.CalculateSunPosition(DateTime.Now, _latitude, _longitude);
         }
 
-//Math.Abs(((_dateTime - SunSet).TotalMinutes)) < 60
+//Math.Abs(((DateTime.Now - SunSet).TotalMinutes)) < 60
 
-        public bool IsNightTime => (_dateTime - SunRise).TotalSeconds < 0 || (_dateTime - SunSet).TotalSeconds > 0;
+        public bool IsNightTime => (DateTime.Now - SunRise).TotalSeconds < 0 || (DateTime.Now - SunSet).TotalSeconds > 0;
 
         public bool IsDayTime => !IsNightTime;
 
@@ -132,10 +114,9 @@ namespace DesktopSisters
 
         public void SetSunCycleRatio(double Latitude, double Longitude)
         {
-            var julianDate = _dateTime.ToOADate() + 2415018.5;
+            var julianDate = DateTime.Now.ToOADate() + 2415018.5;
+            var date = DateTime.Now;
 
-
-            var date = _dateTime;
 
             var zone = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
 
@@ -150,12 +131,12 @@ namespace DesktopSisters
             var sunRiseHour = sunriseString.Split(':').First();
             var sunRiseMinute = sunriseString.Split(':').Last();
 
-            SunRise = new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day, int.Parse(sunRiseHour), int.Parse(sunRiseMinute), 0);
+            SunRise = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(sunRiseHour), int.Parse(sunRiseMinute), 0);
             
             var sunSetMinute = sunsetString.Split(':').Last();
             var sunSetHour = sunsetString.Split(':').First();
 
-            SunSet = new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
+            SunSet = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
 
             double currentTimeDec = Double.Parse(String.Format("{0}.{1:00}", date.Hour, date.Minute));
             double sunRiseTimeDec = Double.Parse(sunriseString.Replace(":", "."));
