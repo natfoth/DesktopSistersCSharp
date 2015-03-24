@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -14,6 +15,24 @@ using DesktopSisters.Utils;
 
 namespace DesktopSisters
 {
+
+    public sealed class NightColors
+    {
+        public Color HorizonColor { get; set; } = Color.FromArgb(77, 145, 157);
+        public Color NightColor { get; set; } = Color.FromArgb(114, 49, 187);
+        public Color BleedColor { get; set; } = Color.FromArgb(52, 50, 101);
+        public Color ShineColor { get; set; } = Color.FromArgb(64, 255, 255, 255);
+        public Color BackgroundColor { get; set; } = Color.FromArgb(80, 77, 157);
+    }
+
+    public sealed class DayColors
+    {
+        public Color StartColor { get; set; } = Color.FromArgb(255, 243, 102);
+        public Color InnerColor { get; set; } = Color.FromArgb(255, 166, 124);
+        public Color OuterColor { get; set; } = Color.FromArgb(255, 200, 178);
+        public Color RayColor { get; set; } = Color.FromArgb(255, 255, 159);
+    }
+
     public class WallpaperManager
     {
         private Configuration _config;
@@ -45,6 +64,9 @@ namespace DesktopSisters
         public Image[] DayClouds;
 
         public Bitmap Wallpaper;
+
+        public NightColors NightColors = new NightColors();
+        public DayColors DayColors = new DayColors();
 
         public void Init()
         {
@@ -232,39 +254,22 @@ namespace DesktopSisters
         #region Night Generation
         public void GenerateNightBackground()
         {
-            var INNER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
-            INNER_CIRCLE = 500;
-            var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
+            var innerCircle = 500; //1000.0 * ResW * 1.0 / 1680.0;
+            var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
 
-            var MoonX = TimeManager.MoonX;
-            var MoonY = TimeManager.MoonY;
+            var moonX = TimeManager.MoonX;
+            var moonY = TimeManager.MoonY;
 
-            //80, 77, 157
-            //77, 145, 157
-            //114, 49, 187
-            //52, 50, 101
-            //102, 102, 204
-            var BG_COLOR = Color.FromArgb(80, 77, 157);
-            
-                
-            var HORIZON_COLOR = Color.FromArgb(77, 145, 157);
-            var NIGHT_COLOR = Color.FromArgb(114, 49, 187);
-            var BLEED_COLOR = Color.FromArgb(52, 50, 101);
-            var SHINE_COLOR = Color.FromArgb(64, 255, 255, 255);
+            var nightColors = new NightColors();
 
             if (TimeManager.IsTwilight) {
                 var item1 = TimeManager.GetSunPos().Item1;
-                BG_COLOR = BlendColor(Color.FromArgb(102, 102, 204), BG_COLOR, (item1/-6));
-                HORIZON_COLOR = BlendColor(Color.FromArgb(255, 200, 178), HORIZON_COLOR, (item1 / -6));
+                nightColors.BackgroundColor = BlendColor(Color.FromArgb(102, 102, 204), nightColors.BackgroundColor, (item1/-6));
+                nightColors.HorizonColor = BlendColor(Color.FromArgb(255, 200, 178), nightColors.HorizonColor, (item1 / -6));
             }
-            /* var BG_COLOR = 0xFF504D9d;
-             var HORIZON_COLOR = 0xFF4D919D;
-             var NIGHT_COLOR = 0xAA7231BB;
-             var BLEED_COLOR = 0x00343265;*/
 
-            var MOONSHINE_RADIUS = Moon.Width/2;
-            var BleedWidth = ResW*2/5;
-
+            var moonshineRadius = Moon.Width/2;
+            var bleedWidth = ResW*2/5;
 
             Benchmark.Start();
             var wallpaperLockBitmap = new LockBitmap(Wallpaper);
@@ -274,16 +279,16 @@ namespace DesktopSisters
             {
                 for (int x = 0; x < wallpaperLockBitmap.Width; x++)
                 {
-                    var Dist = Math.Sqrt((MoonX - x) * (MoonX - x) + (MoonY - y) * (MoonY - y));
+                    var Dist = Math.Sqrt((moonX - x) * (moonX - x) + (moonY - y) * (moonY - y));
 
-                    var Base = BlendColor(BG_COLOR, HORIZON_COLOR, (double) y/(double) ResH);
-                    var Night = BlendColor(BLEED_COLOR, NIGHT_COLOR, ((double) (Math.Max(x - ResW + BleedWidth, 0)))/(double) BleedWidth);
+                    var Base = BlendColor(nightColors.BackgroundColor, nightColors.HorizonColor, (double) y/(double) ResH);
+                    var Night = BlendColor(nightColors.BleedColor, nightColors.NightColor, ((double) (Math.Max(x - ResW + bleedWidth, 0)))/(double) bleedWidth);
                     var BG = BlendColor(Base, Night, Night.R/255.0f);
 
                     var color = BG;
-                    if (Dist < INNER_CIRCLE)
+                    if (Dist < innerCircle)
                     {
-                        var alphaToUse = Dist / INNER_CIRCLE;
+                        var alphaToUse = Dist / innerCircle;
                         alphaToUse = (1.0 - alphaToUse) * 255.0;
                         if (Dist < 50)
                         {
@@ -327,7 +332,7 @@ namespace DesktopSisters
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Stars
-                canvas.DrawImage(Stars, new Rectangle(10, 50, ((int)((double)ResW)), (ResH)));
+                canvas.DrawImage(Stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
                 #endregion
 
                 #region Clouds
@@ -377,17 +382,9 @@ namespace DesktopSisters
 
         public void GenerateDayBackground()
         {
-            var INNER_CIRCLE = 1000.0*ResW*1.0/1680.0;
+            var innerCircle = 1000.0*ResW*1.0/1680.0;
             //INNER_CIRCLE = 1000;
-            var OUTER_CIRCLE = 1000.0 * ResW * 1.0 / 1680.0;
-
-            var START_COLOR = Color.FromArgb(255, 243, 102);
-            var INNER_COLOR = Color.FromArgb(255, 166, 124);
-            var OUTER_COLOR = Color.FromArgb(255, 200, 178);
-            var RAY_COLOR = Color.FromArgb(255, 255, 159);
-
-            
-
+            var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
 
             Benchmark.Start();
             var wallpaperLockBitmap = new LockBitmap(Wallpaper);
@@ -400,33 +397,33 @@ namespace DesktopSisters
             {
                 for (int x = 0; x < wallpaperLockBitmap.Width; x++)
                 {
-                    var Dist = Math.Sqrt((SunX - x)*(SunX - x) + (SunY - y)*(SunY - y));
+                    var dist = Math.Sqrt((SunX - x)*(SunX - x) + (SunY - y)*(SunY - y));
 
                     Color color = Color.Red;
 
-                    if (Dist < INNER_CIRCLE)
+                    if (dist < innerCircle)
                     {
-                        var alphaToUse = Dist / INNER_CIRCLE;
+                        var alphaToUse = dist / innerCircle;
                         alphaToUse = (1.0 - alphaToUse) * 255.0;
-                        if (Dist < 50)
+                        if (dist < 50)
                         {
                             color = Color.Blue;
                         }
 
                         //alphaToUse = 1;
-                        var testColor = Color.FromArgb((int) 255, START_COLOR.R, START_COLOR.G, START_COLOR.B);
+                        var testColor = Color.FromArgb((int) 255, DayColors.StartColor.R, DayColors.StartColor.G, DayColors.StartColor.B);
 
                         //color = Merge(INNER_COLOR, testColor);
 
-                        color = BlendColor(INNER_COLOR, testColor, alphaToUse / 255);
+                        color = BlendColor(DayColors.InnerColor, testColor, alphaToUse / 255);
 
                         int bob = 1;
                     }
                     else
                     {
-                        var range = Math.Min((Dist - INNER_CIRCLE)*255.0/(INNER_CIRCLE + OUTER_CIRCLE), 1.0);
+                        var range = Math.Min((dist - innerCircle)*255.0/(innerCircle + outerCircle), 1.0);
 
-                        color = BlendColor(INNER_COLOR, OUTER_COLOR, 0);
+                        color = BlendColor(DayColors.InnerColor, DayColors.OuterColor, 0);
 
                         int bob = 1;
                     }
