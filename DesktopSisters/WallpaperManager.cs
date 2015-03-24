@@ -103,31 +103,31 @@ namespace DesktopSisters
             Update();
         }
 
-        public Image LoadDayImage(String name)
+        public Image LoadDayImage(string name)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (directory == null)
                 return null;
 
-            var imageLocationName = String.Format("Day/Traditional/{0}", name);
+            var imageLocationName = string.Format("Day/Traditional/{0}", name);
             if (_config.UseNewArtStyle)
-                imageLocationName = String.Format("Day/New/{0}", name);
+                imageLocationName = string.Format("Day/New/{0}", name);
 
 
             return Image.FromFile(Path.Combine(directory, imageLocationName));
         }
 
-        public Image LoadNightImage(String name)
+        public Image LoadNightImage(string name)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (directory == null)
                 return null;
 
-            var imageLocationName = String.Format("Night/Traditional/{0}", name);
+            var imageLocationName = string.Format("Night/Traditional/{0}", name);
             if (_config.UseNewArtStyle)
-                imageLocationName = String.Format("Night/New/{0}", name);
+                imageLocationName = string.Format("Night/New/{0}", name);
 
 
             return Image.FromFile(Path.Combine(directory, imageLocationName));
@@ -146,7 +146,7 @@ namespace DesktopSisters
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern Int32 SystemParametersInfo(UInt32 uiAction, UInt32 uiParam, String pvParam, UInt32 fWinIni);
+        private static extern Int32 SystemParametersInfo(UInt32 uiAction, UInt32 uiParam, string pvParam, UInt32 fWinIni);
         private static UInt32 SPI_SETDESKWALLPAPER = 20;
         private static UInt32 SPIF_UPDATEINIFILE = 0x1;
 
@@ -163,7 +163,6 @@ namespace DesktopSisters
             {
             }
             
-
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
         }
 
