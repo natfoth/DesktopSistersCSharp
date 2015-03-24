@@ -133,16 +133,9 @@ namespace DesktopSisters
         public void SetSunCycleRatio(double Latitude, double Longitude)
         {
             var julianDate = _dateTime.ToOADate() + 2415018.5;
-            var julianDay = (int)julianDate;
 
 
             var date = _dateTime;
-            var isSunrise = false;
-            var isSunset = false;
-
-
-            var thisTime = _dateTime;
-            var isDaylight = TimeZoneInfo.Local.IsDaylightSavingTime(thisTime);
 
             var zone = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
 
@@ -180,8 +173,6 @@ namespace DesktopSisters
 
                 NightRatio = amountToSub / 12;
             }
-
-            var test = IsDayTime;
         }
 
         public void UpdateConfig(Configuration config)
