@@ -155,9 +155,15 @@ namespace DesktopSisters
             string tempPath = Path.GetTempPath();
             string filePath = Path.Combine(tempPath, "WallpaperNew.bmp");
 
+            string filePathTemp = Path.Combine(tempPath, String.Format("WallpaperNew_{0:00}_{1:00}.jpg", TimeManager._dateTime.Hour, TimeManager._dateTime.Minute));
+            if (TimeManager._dateTime.Hour < 7)
+                filePathTemp = Path.Combine(tempPath, String.Format("WallpaperNew_3{0:00}_{1:00}.jpg", TimeManager._dateTime.Hour, TimeManager._dateTime.Minute)); // this is just to make it so it goes in order
+
             try
             {
                 Wallpaper.Save(filePath);
+
+               // Wallpaper.Save(filePathTemp); save out the day cycle
             }
             catch
             {
