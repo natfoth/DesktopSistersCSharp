@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -48,7 +49,7 @@ namespace DesktopSisters
         public int ResW;
         public int ResH;
 
-        public Image Canvas;
+        public Bitmap Canvas;
 
         public Image Luna;
         public Image Moon;
@@ -70,13 +71,28 @@ namespace DesktopSisters
 
         public void Init()
         {
+            Rectangle resolution = Screen.PrimaryScreen.Bounds;
+
+            ResW = resolution.Width;
+            ResH = resolution.Height;
+
+            Wallpaper = new Bitmap(ResW, ResH);
 
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (directory == null)
                 return;
 
-            Canvas = Image.FromFile(Path.Combine(directory, "CanvasTexture.jpg"));
+            var canvasImage = new Bitmap(Image.FromFile(Path.Combine(directory, "CanvasTexture.jpg")));
+
+            Canvas = new Bitmap(ResW, ResH);
+
+            using (var canvas = Graphics.FromImage(Canvas)) // resize the canvas to fit the wallpaper size
+            {
+                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                canvas.DrawImage(canvasImage, new Rectangle(0, 0, Wallpaper.Width, Wallpaper.Height));
+                canvas.Save();
+            }
 
             Luna = LoadNightImage("Luna.png");
             Moon = LoadNightImage("Moon.png");
@@ -92,12 +108,7 @@ namespace DesktopSisters
             Landscape = LoadDayImage("Landscape.png");
             DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };
 
-            Rectangle resolution = Screen.PrimaryScreen.Bounds;
-
-            ResW = resolution.Width;
-            ResH = resolution.Height;
-
-            Wallpaper = new Bitmap(ResW, ResH);
+            
 
             
             Update();
@@ -172,8 +183,11 @@ namespace DesktopSisters
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
         }
 
+
         public void GenerateWallpaper()
         {
+            Benchmark.Start();
+
             if (TimeManager.IsNightTime)
             {
                 GenerateNightBackground();
@@ -183,83 +197,96 @@ namespace DesktopSisters
 
             if (TimeManager.IsDayTime)
             {
-                GenerateDayBackground();
+                GenerateDayBackgroundEffect();
                 GenerateDaySky();
                 GenerateDayForground();
             }
 
             GenerateCanvasEffect();
+
+            Benchmark.End();
+            var miliseconds = Benchmark.GetMiliseconds();
+
+            //System.IO.File.WriteAllText(@"C:\Users\Nathaniel\Documents\WriteLines.txt", miliseconds.ToString());
+
+            int bob = 1;
         }
 
         #region Canvas Generation
         public void GenerateCanvasEffect()
         {
-            var canvasResized = new Bitmap(ResW, ResH);
+            var innerCircle = 1000.0 * ResW * 1.0 / 1680.0;
+            //INNER_CIRCLE = 1000;
+            var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
+            var SunX = TimeManager.SunX;
+            var SunY = TimeManager.SunY;
 
-            using (var canvas = Graphics.FromImage(canvasResized)) // resize the canvas to fit the wallpaper size
+
+            BitmapData bitmapData1 = Wallpaper.LockBits(new Rectangle(0, 0,
+                                     Wallpaper.Width, Wallpaper.Height),
+                                     ImageLockMode.ReadWrite,
+                                     PixelFormat.Format32bppArgb);
+
+            BitmapData bitmapDataCanvas = Canvas.LockBits(new Rectangle(0, 0,
+                                     Canvas.Width, Canvas.Height),
+                                     ImageLockMode.ReadWrite,
+                                     PixelFormat.Format32bppArgb);
+
+            unsafe
             {
-                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                canvas.DrawImage(Canvas, new Rectangle(0, 0, Wallpaper.Width, Wallpaper.Height));
-                canvas.Save();
-            }
+                byte* imagePointer1 = (byte*)bitmapData1.Scan0;
+                byte* imagePointerCanvas = (byte*)bitmapDataCanvas.Scan0;
 
-            Benchmark.Start();
-            var wallpaperLockBitmap = new LockBitmap(Wallpaper);
-            wallpaperLockBitmap.LockBits();
-
-            for (int y = 0; y < wallpaperLockBitmap.Height; y++)
-            {
-                for (int x = 0; x < wallpaperLockBitmap.Width; x++)
+                for (int y = 0; y < bitmapData1.Height; y++)
                 {
+                    for (int x = 0; x < bitmapData1.Width; x++)
+                    {
+                        byte[] newColor = new byte[4];
 
-                    var blend = canvasResized.GetPixel(x, y);
-                    var src = wallpaperLockBitmap.GetPixel(x, y);
+                        if (imagePointer1[0] < 128)
+                            newColor[0] = (byte)((2 * imagePointer1[0] * imagePointerCanvas[0]) / 255);
+                        else
+                            newColor[0] = (byte)(255 - (2 * (255 - imagePointerCanvas[0]) * (255 - imagePointer1[0])) / 255);
 
-                    int red = src.R;
-                    int green = src.G;
-                    int blue = src.B;
-                    int alpha = src.A;
+                        if (imagePointer1[1] < 128)
+                            newColor[1] = (byte)((2 * imagePointer1[1] * imagePointerCanvas[1]) / 255);
+                        else
+                            newColor[1] = (byte)(255 - (2 * (255 - imagePointerCanvas[1]) * (255 - imagePointer1[1])) / 255);
 
-                    if (src.R < 128)
-                        red = Limit255((2 * (double)src.R * (double)blend.R) / 255);
-                    else
-                        red = Limit255(255 - (2 * (255 - blend.R) * (255 - src.R)) / 255);
+                        if (imagePointer1[2] < 128)
+                            newColor[2] = (byte)((2 * imagePointer1[2] * imagePointerCanvas[2]) / 255);
+                        else
+                            newColor[2] = (byte)(255 - (2 * (255 - imagePointerCanvas[2]) * (255 - imagePointer1[2])) / 255);
 
-                    if (src.G < 128)
-                        green = Limit255((2 * (double)src.G * (double)blend.G) / 255);
-                    else
-                        green = Limit255(255 - (2 * (255 - blend.G) * (255 - src.G)) / 255);
+                        newColor[3] = 255;
 
-                    if (src.B < 128)
-                        blue = Limit255((2 * (double)src.B * (double)blend.B) / 255);
-                    else
-                        blue = Limit255(255 - (2 * (255 - blend.B) * (255 - src.B)) / 255);
+                        var color = Merge(new[] { imagePointer1[0], imagePointer1[1], imagePointer1[2], imagePointer1[3] }, newColor, 0.65);
 
+                        imagePointer1[0] = color[0];
+                        imagePointer1[1] = color[1];
+                        imagePointer1[2] = color[2];
+                        imagePointer1[3] = 255;
 
-                    alpha = 255;
-
-                    var newColor = Color.FromArgb(alpha, red, green, blue);
-
-                    newColor = Merge(src, newColor, 0.65);
-
-                   // var dest = src;
-                   // dest = Merge(dest, newColor);
-
-
-                    wallpaperLockBitmap.SetPixel(x, y, newColor);
-                }
-            }
-
-            wallpaperLockBitmap.UnlockBits();
-            Benchmark.End();
-            double miliseconds = Benchmark.GetMiliseconds();
+                        //4 bytes per pixel
+                        imagePointer1 += 4;
+                        imagePointerCanvas += 4;
+                    }//end for j
+                     //4 bytes per pixel
+                    imagePointer1 += bitmapData1.Stride -
+                                    (bitmapData1.Width * 4);
+                    imagePointerCanvas += bitmapData1.Stride -
+                                    (bitmapData1.Width * 4);
+                }//end for i
+            }//end unsafe
+            Wallpaper.UnlockBits(bitmapData1);
+            Canvas.UnlockBits(bitmapDataCanvas);
         }
         #endregion
 
         #region Night Generation
         public void GenerateNightBackground()
         {
-            var innerCircle = 500; //1000.0 * ResW * 1.0 / 1680.0;
+           /* var innerCircle = 500; //1000.0 * ResW * 1.0 / 1680.0;
             var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
 
             var moonX = TimeManager.MoonX;
@@ -313,21 +340,8 @@ namespace DesktopSisters
 
             wallpaperLockBitmap.UnlockBits();
             Benchmark.End();
-            double miliseconds = Benchmark.GetMiliseconds();
+            double miliseconds = Benchmark.GetMiliseconds();*/
 
-        }
-
-        /// <summary>Blends the specified colors together.</summary>
-        /// <param name="color">Color to blend onto the background color.</param>
-        /// <param name="backColor">Color to blend the other color onto.</param>
-        /// <param name="amount">How much of <paramref name="color"/> to keep,
-        /// “on top of” <paramref name="backColor"/>.</param>
-        /// <returns>The blended colors.</returns>
-        public static Color Blend(Color color, Color backColor, double amount) {
-            byte r = (byte)((color.R * amount) + backColor.R * (1 - amount));
-            byte g = (byte)((color.G * amount) + backColor.G * (1 - amount));
-            byte b = (byte)((color.B * amount) + backColor.B * (1 - amount));
-            return Color.FromArgb(r, g, b);
         }
 
         public void GenerateNightSky()
@@ -385,61 +399,62 @@ namespace DesktopSisters
         }
         #endregion
 
-        public void GenerateDayBackground()
+        public void GenerateDayBackgroundEffect()
         {
-            var innerCircle = 1000.0*ResW*1.0/1680.0;
+            var innerCircle = 1000.0 * ResW * 1.0 / 1680.0;
             //INNER_CIRCLE = 1000;
             var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
-
-            Benchmark.Start();
-            var wallpaperLockBitmap = new LockBitmap(Wallpaper);
-            wallpaperLockBitmap.LockBits();
-
             var SunX = TimeManager.SunX;
             var SunY = TimeManager.SunY;
 
-            for (int y = 0; y < wallpaperLockBitmap.Height; y++)
+
+            BitmapData bitmapData1 = Wallpaper.LockBits(new Rectangle(0, 0,
+                                     Wallpaper.Width, Wallpaper.Height),
+                                     ImageLockMode.ReadOnly,
+                                     PixelFormat.Format32bppArgb);
+            int a = 0;
+            byte[] inner_color = new[] { DayColors.InnerColor.B, DayColors.InnerColor.G, DayColors.InnerColor.R, DayColors.InnerColor.A };
+            byte[] start_color = new[] { DayColors.StartColor.B, DayColors.StartColor.G, DayColors.StartColor.R, DayColors.StartColor.A };
+            unsafe
             {
-                for (int x = 0; x < wallpaperLockBitmap.Width; x++)
+                byte* imagePointer1 = (byte*)bitmapData1.Scan0;
+
+                for (int y = 0; y < bitmapData1.Height; y++)
                 {
-                    var dist = Math.Sqrt((SunX - x)*(SunX - x) + (SunY - y)*(SunY - y));
-
-                    Color color = Color.Red;
-
-                    if (dist < innerCircle)
+                    for (int x = 0; x < bitmapData1.Width; x++)
                     {
-                        var alphaToUse = dist / innerCircle;
-                        alphaToUse = (1.0 - alphaToUse) * 255.0;
-                        if (dist < 50)
+                        var dist = Math.Sqrt((SunX - x) * (SunX - x) + (SunY - y) * (SunY - y));
+
+                        if (dist < innerCircle)
                         {
-                            color = Color.Blue;
+                            var alphaToUse = dist / innerCircle;
+                            alphaToUse = (1.0 - alphaToUse);
+
+                            // BlendColor(inner_color, start_color, 1.0);
+                            var color = BlendColor(inner_color, start_color, alphaToUse);
+
+                            imagePointer1[0] = color[0];
+                            imagePointer1[1] = color[1];
+                            imagePointer1[2] = color[2];
+                            imagePointer1[3] = 255;
+                        }
+                        else
+                        {
+                            imagePointer1[0] = inner_color[0];
+                            imagePointer1[1] = inner_color[1];
+                            imagePointer1[2] = inner_color[2];
+                            imagePointer1[3] = 255;
                         }
 
-                        //alphaToUse = 1;
-                        var testColor = Color.FromArgb((int) 255, DayColors.StartColor.R, DayColors.StartColor.G, DayColors.StartColor.B);
-
-                        //color = Merge(INNER_COLOR, testColor);
-
-                        color = BlendColor(DayColors.InnerColor, testColor, alphaToUse / 255);
-
-                        int bob = 1;
-                    }
-                    else
-                    {
-                        var range = Math.Min((dist - innerCircle)*255.0/(innerCircle + outerCircle), 1.0);
-
-                        color = BlendColor(DayColors.InnerColor, DayColors.OuterColor, 0);
-
-                        int bob = 1;
-                    }
-
-                    wallpaperLockBitmap.SetPixel(x, y, color);
-                }
-            }
-
-            wallpaperLockBitmap.UnlockBits();
-            Benchmark.End();
-            double miliseconds = Benchmark.GetMiliseconds();
+                        //4 bytes per pixel
+                        imagePointer1 += 4;
+                    }//end for j
+                     //4 bytes per pixel
+                    imagePointer1 += bitmapData1.Stride -
+                                    (bitmapData1.Width * 4);
+                }//end for i
+            }//end unsafe
+            Wallpaper.UnlockBits(bitmapData1);
         }
 
         public void GenerateDaySky()
@@ -484,33 +499,21 @@ namespace DesktopSisters
             }
         }
 
-        public int Limit255(double val1)
-        {
-            if (val1 < 0)
-                return 0;
-            if (val1 > 255)
-                return 255;
-
-            return (int)val1;
-        }
-
-
-        public Color BlendColor(Color firstColor, Color secondColor, double ratio)
+        public byte[] BlendColor(byte[] firstColor, byte[] secondColor, double ratio)
         {
             double revRatio = 1.0f - ratio;
 
-            var red = Limit255(firstColor.R * revRatio + secondColor.R * ratio);
-            var green = Limit255(firstColor.G * revRatio + secondColor.G * ratio);
-            var blue = Limit255(firstColor.B * revRatio + secondColor.B * ratio);
-            var alpha = Limit255(firstColor.A * revRatio + secondColor.A * ratio);
+            var blue = (byte) (firstColor[0] * revRatio + secondColor[0] * ratio);
+            var green = (byte) (firstColor[1] * revRatio + secondColor[1] * ratio);
+            var red = (byte) (firstColor[2] * revRatio + secondColor[2] * ratio);
+            var alpha = (byte) (firstColor[3] * revRatio + secondColor[3] * ratio);
 
-            return Color.FromArgb(alpha, red, green, blue);
+            return new []{blue, green, red, (byte)255};
         }
 
-        public Color Merge(Color dest, Color src, double opacity = 1.0)
+        public byte[] Merge(byte[] dest, byte[] src, double opacity = 1.0)
         {
-
-            int srcAlpha = (int) (src.A * opacity);
+            int srcAlpha = (int)(src[3] * opacity);
 
             if (srcAlpha <= 0)
                 return dest;
@@ -519,64 +522,17 @@ namespace DesktopSisters
                 return src;
             }
 
-
-            double newalpha = srcAlpha + (((255 - srcAlpha) * dest.A) / 255.0);// / 255.0;
-            int alpha255 = (int) ((dest.A * (255 - srcAlpha))/255.0);//  /255.0;
+            double newalpha = srcAlpha + (((255 - srcAlpha) * dest[3]) / 255.0);// / 255.0;
+            int alpha255 = (int)((dest[3] * (255 - srcAlpha)) / 255.0);//  /255.0;
 
             newalpha = 1.0 / newalpha;
 
-            var red =  ((src.R * srcAlpha + (dest.R * alpha255)) * newalpha);
-            var green = ((src.G * srcAlpha + (dest.G * alpha255)) * newalpha);
-            var blue = ((src.B * srcAlpha + (dest.B * alpha255)) * newalpha);
+            var blue = (byte)((src[0] * srcAlpha + (dest[0] * alpha255)) * newalpha);
+            var green = (byte)((src[1] * srcAlpha + (dest[1] * alpha255)) * newalpha);
+            var red = (byte)((src[2] * srcAlpha + (dest[2] * alpha255)) * newalpha);
 
-            return Color.FromArgb(255, (int)red, (int)green, (int)blue);
-
-        }
-
-        public Color From0BGR(uint bgrColor)
-        {
-            // Get the color bytes
-            var bytes = BitConverter.GetBytes(bgrColor);
-
-            // Return the color from the byte array
-            return Color.FromArgb(bytes[2], bytes[1], bytes[0]);
-        }
-
-        public int DIVIDE_BY_255(int input)
-        {
-            return (input + (((input + 128) >> 8) + 128)) >> 8;
+            return new[] { blue, green, red, (byte)255 };
         }
 
     }
-
-   /* public static class DesktopSisterExtensions
-    {
-        public static void Merge(this Color color, Color src)
-        {
-            int destAlpha = color.A;
-
-            if (destAlpha <= 0)
-                return;
-            else if (destAlpha == 255)
-            {
-                return;
-            }
-            double newalpha = destAlpha + DIVIDE_BY_255((255 - destAlpha) * src.A); // / 255.0;
-            int alpha255 = DIVIDE_BY_255(src.A * (255 - destAlpha)); //  /255.0;
-
-            var newAlpha = newalpha;
-            newalpha = 1.0 / newalpha;
-
-            var red = ((color.R * destAlpha + (color.R * alpha255)) * newalpha);
-            var green = ((color.G * destAlpha + (color.G * alpha255)) * newalpha);
-            var blue = ((color.B * destAlpha + (color.B * alpha255)) * newalpha);
-
-            color = Color.FromArgb((int)newAlpha, (int)red, (int)green, (int)blue);
-        }
-
-        public static int DIVIDE_BY_255(int input)
-        {
-            return (input + (((input + 128) >> 8) + 128)) >> 8;
-        }
-    }*/
 }

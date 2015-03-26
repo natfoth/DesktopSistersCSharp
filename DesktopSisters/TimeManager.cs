@@ -34,7 +34,7 @@ namespace DesktopSisters
 
         public TimeManager(Configuration config)
         {
-            //_dateTime = DateTime.Parse("0:00 am");
+            //_dateTime = DateTime.Parse("6:00 pm");
             _dateTime = DateTime.Now;
 
             _lastRealTime = DateTime.Now;
@@ -64,7 +64,7 @@ namespace DesktopSisters
             //var timeSpan = DateTime.Now.Subtract(_lastRealTime);
             // _dateTime = _dateTime.AddMinutes(5);
             _dateTime = DateTime.Now;
-             _lastRealTime = DateTime.Now;
+            _lastRealTime = DateTime.Now;
 
             SetSunCycleRatio(_latitude, _longitude);
             CalculateSunPosition();
