@@ -64,8 +64,9 @@ namespace DesktopSisters
 
         public void UpdateScene()
         {
+            RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
             //TimeManager.UpdateScene();
-           // WallpaperManager.UpdateScene();
+            // WallpaperManager.UpdateScene();
         }
 
         public void UpdateConfig(Configuration config)
