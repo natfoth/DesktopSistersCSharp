@@ -19,18 +19,22 @@ namespace DesktopSistersCSharpForm
         private WallpaperManager WallpaperManager;
         
 
-        public RenderScene(string fileName, DateTime timeToRender, double lat, double longi, Configuration config)
+        public RenderScene(string fileName, DateTime timeToRender, ImageController _imageController, double lat, double longi, Configuration config)
         {
             Filename = fileName;
 
             TimeManager = new TimeManager(timeToRender, lat, longi);
             TimeManager.Update();
 
-            WallpaperManager = new WallpaperManager(TimeManager, config);
-            WallpaperManager.Init();
+            WallpaperManager = new WallpaperManager(TimeManager, _imageController, config);
         }
 
         public Bitmap RenderedScene => WallpaperManager.RenderToBitmap();
+
+        public void Dispose()
+        {
+            WallpaperManager.Wallpaper.Dispose();
+        }
     }
 
     public class RenderController
@@ -42,19 +46,21 @@ namespace DesktopSistersCSharpForm
         private double _latitude;
         private double _longitude;
         private bool _rendering;
+        private ImageController _imageController;
 
         public List<RenderScene> Scenes = new List<RenderScene>(); 
 
         public RenderController(Configuration config)
         {
             _config = config;
+            _imageController = new ImageController(config);
 
             UpdateConfig(_config); 
         }
 
         public void AddSceneToQueue(DateTime dateTime, string filename)
         {
-            var newScene = new RenderScene(filename, dateTime, _latitude, _longitude, _config);
+            var newScene = new RenderScene(filename, dateTime, _imageController, _latitude, _longitude, _config);
             Scenes.Add(newScene);
         }
 
@@ -70,14 +76,18 @@ namespace DesktopSistersCSharpForm
             var renderedScene = sceneToRender.RenderedScene;
 
             string tempPath = Path.GetTempPath();
-            string filePath = Path.Combine(tempPath, String.Format("{0}.bmp", sceneToRender.Filename));
+            string filePath = Path.Combine(tempPath, String.Format("{0}", sceneToRender.Filename));
+
 
             renderedScene.Save(filePath);
 
-            if (sceneToRender.Filename == "Wallpaper")
+            if (sceneToRender.Filename == "Wallpaper.bmp")
             {
                 SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
             }
+
+            renderedScene.Dispose();
+
             _rendering = false;
 
         }

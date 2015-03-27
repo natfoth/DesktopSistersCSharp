@@ -25,6 +25,8 @@ namespace DesktopSisters
 
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
 
+            GenerateDayAndNightCycle();
+
             _pulse = new System.Timers.Timer();
             _pulse.Elapsed += Pulse;
             _pulse.Interval = 1000; // in miliseconds
@@ -54,17 +56,12 @@ namespace DesktopSisters
             _newSceneUpdateTimer.Stop();
             _newSceneUpdateTimer.Start();
 
-            RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
-
-            /*RenderController.AddSceneToQueue(DateTime.Parse("6:00 pm"), "Wallpaper");
-            RenderController.AddSceneToQueue(DateTime.Parse("1:00 pm"), "Wallpaper1");
-            RenderController.AddSceneToQueue(DateTime.Parse("4:00 pm"), "Wallpaper2");
-            RenderController.AddSceneToQueue(DateTime.Parse("9:00 pm"), "Wallpaper3");*/
+            RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper.bmp");
         }
 
         public void UpdateScene()
         {
-            RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
+            RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper.bmp");
             //TimeManager.UpdateScene();
             // WallpaperManager.UpdateScene();
         }
@@ -77,6 +74,21 @@ namespace DesktopSisters
            // WallpaperManager.UpdateConfig(config);
            // TimeManager.UpdateConfig(config);
         }
+
+        public void GenerateDayAndNightCycle()
+        {
+            var time = DateTime.Parse("7:00 am");
+            const int updateTime = 5; // in minutes
+
+            for (int i = 0; i < 288; i++) // 
+            {
+                RenderController.AddSceneToQueue(time, String.Format("DesktopSisters\\{0:00}_{1:00}.png", time.Hour, time.Minute));
+                time = time.AddMinutes(updateTime);
+            }
+
+            
+        }
+
         
     }
 }

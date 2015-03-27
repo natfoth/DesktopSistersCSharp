@@ -38,10 +38,12 @@ namespace DesktopSisters
     public class WallpaperManager
     {
         private Configuration _config;
+        private ImageController _imageController;
 
-        public WallpaperManager(TimeManager timeManager, Configuration config)
+        public WallpaperManager(TimeManager timeManager, ImageController imageController, Configuration config)
         {
             TimeManager = timeManager;
+            _imageController = imageController;
             _config = config;
         }
 
@@ -50,20 +52,7 @@ namespace DesktopSisters
         public int ResW;
         public int ResH;
 
-        public Bitmap Canvas;
-
-        public Image Luna;
-        public Image Moon;
-        public Image LandscapeNight;
-        public Image Stars;
-        public Image FallingStar;
-        public Image[] NightClouds;
-        public Image Triangle;
-
-        public Image Celestia;
-        public Image Sun;
-        public Image Landscape;
-        public Image[] DayClouds;
+        
 
         public Bitmap Wallpaper;
 
@@ -79,67 +68,11 @@ namespace DesktopSisters
 
             Wallpaper = new Bitmap(ResW, ResH);
 
-            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            if (directory == null)
-                return;
-
-            var canvasImage = new Bitmap(Image.FromFile(Path.Combine(directory, "CanvasTexture.jpg")));
-
-            Canvas = new Bitmap(ResW, ResH);
-
-            using (var canvas = Graphics.FromImage(Canvas)) // resize the canvas to fit the wallpaper size
-            {
-                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                canvas.DrawImage(canvasImage, new Rectangle(0, 0, Wallpaper.Width, Wallpaper.Height));
-                canvas.Save();
-            }
-
-            Luna = LoadNightImage("Luna.png");
-            Moon = LoadNightImage("Moon.png");
-            LandscapeNight = LoadNightImage("LandscapeNight.png");
-            Stars = LoadNightImage("Stars.png");
-            FallingStar = LoadNightImage("FallingStar.png");
-            NightClouds = new Image[3] { LoadNightImage("NightCloud1.png"), LoadNightImage("NightCloud2.png"), LoadNightImage("NightCloud3.png") };
-            Triangle = LoadNightImage("Triangle.png");
-
-
-            Celestia = LoadDayImage("Celestia.png");
-            Sun = LoadDayImage("Sun.png");
-            Landscape = LoadDayImage("Landscape.png");
-            DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };
+            
 
         }
 
-        public Image LoadDayImage(string name)
-        {
-            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            if (directory == null)
-                return null;
-
-            var imageLocationName = string.Format("Day/Traditional/{0}", name);
-            if (_config.UseNewArtStyle)
-                imageLocationName = string.Format("Day/New/{0}", name);
-
-
-            return Image.FromFile(Path.Combine(directory, imageLocationName));
-        }
-
-        public Image LoadNightImage(string name)
-        {
-            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            if (directory == null)
-                return null;
-
-            var imageLocationName = string.Format("Night/Traditional/{0}", name);
-            if (_config.UseNewArtStyle)
-                imageLocationName = string.Format("Night/New/{0}", name);
-
-
-            return Image.FromFile(Path.Combine(directory, imageLocationName));
-        }
+        
 
         public void UpdateConfig(Configuration config)
         {
@@ -150,6 +83,7 @@ namespace DesktopSisters
 
         public Bitmap RenderToBitmap()
         {
+            Init();
             GenerateWallpaper();
             return Wallpaper;
         }
@@ -190,8 +124,8 @@ namespace DesktopSisters
                                      ImageLockMode.ReadWrite,
                                      PixelFormat.Format32bppArgb);
 
-            BitmapData bitmapDataCanvas = Canvas.LockBits(new Rectangle(0, 0,
-                                     Canvas.Width, Canvas.Height),
+            BitmapData bitmapDataCanvas = _imageController.Canvas.LockBits(new Rectangle(0, 0,
+                                     _imageController.Canvas.Width, _imageController.Canvas.Height),
                                      ImageLockMode.ReadWrite,
                                      PixelFormat.Format32bppArgb);
 
@@ -239,7 +173,7 @@ namespace DesktopSisters
 
             }//end unsafe
             Wallpaper.UnlockBits(bitmapData1);
-            Canvas.UnlockBits(bitmapDataCanvas);
+            _imageController.Canvas.UnlockBits(bitmapDataCanvas);
         }
         #endregion
 
@@ -265,7 +199,7 @@ namespace DesktopSisters
                 horizonColor = BlendColor(Color.FromArgb(255, 200, 178).ToByteArray(), horizonColor, (item1 / -6));
             }
 
-            var moonshineRadius = Moon.Width / 2;
+
             var bleedWidth = ResW * 2 / 5;
 
 
@@ -318,29 +252,29 @@ namespace DesktopSisters
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Stars
-                canvas.DrawImage(Stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
+                canvas.DrawImage(_imageController.Stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
                 #endregion
 
                 #region Clouds
-                canvas.DrawImageUnscaled(NightClouds[2], (int) (ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)), -20);
-                canvas.DrawImageUnscaled(NightClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 220, -20);
-                canvas.DrawImageUnscaled(NightClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, -20);
+                canvas.DrawImageUnscaled(_imageController.NightClouds[2], (int) (ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)), -20);
+                canvas.DrawImageUnscaled(_imageController.NightClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 220, -20);
+                canvas.DrawImageUnscaled(_imageController.NightClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, -20);
                 #endregion
 
                 #region Falling Star
-                canvas.DrawImageUnscaled(FallingStar, (int) ((double)TimeManager.NightRatio * (double)ResW) + 500, 200);
+                canvas.DrawImageUnscaled(_imageController.FallingStar, (int) ((double)TimeManager.NightRatio * (double)ResW) + 500, 200);
                 #endregion
 
                 #region Triangle
-                canvas.DrawImageUnscaled(Triangle, (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
+                canvas.DrawImageUnscaled(_imageController.Triangle, (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
                 #endregion
 
                 #region Moon
 
-                var moonX = TimeManager.MoonX - (double) Moon.Width/2.0;
-                var moonY = TimeManager.MoonY - (double)Moon.Height / 2.0;
+                var moonX = TimeManager.MoonX - (double)_imageController.Moon.Width/2.0;
+                var moonY = TimeManager.MoonY - (double)_imageController.Moon.Height / 2.0;
 
-                canvas.DrawImageUnscaled(Moon, (int) moonX, (int) moonY);
+                canvas.DrawImageUnscaled(_imageController.Moon, (int) moonX, (int) moonY);
                 #endregion
 
                 canvas.Save();
@@ -354,11 +288,11 @@ namespace DesktopSisters
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Landscape
-                canvas.DrawImage(LandscapeNight, new Rectangle(0, ResH - LandscapeNight.Height, ((int)((double)ResW)), LandscapeNight.Height));
+                canvas.DrawImage(_imageController.LandscapeNight, new Rectangle(0, ResH - _imageController.LandscapeNight.Height, ((int)((double)ResW)), _imageController.LandscapeNight.Height));
                 #endregion
 
                 #region Luna
-                canvas.DrawImage(Luna, new Rectangle(20, ResH - Luna.Height - 10, Luna.Width, Luna.Height));
+                canvas.DrawImage(_imageController.Luna, new Rectangle(20, ResH - _imageController.Luna.Height - 10, _imageController.Luna.Width, _imageController.Luna.Height));
                 #endregion
 
                 canvas.Save();
@@ -489,17 +423,17 @@ namespace DesktopSisters
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Clouds
-                canvas.DrawImageUnscaled(DayClouds[2], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)), -20);
-                canvas.DrawImageUnscaled(DayClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 220, -20);
-                canvas.DrawImageUnscaled(DayClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 400, -20);
+                canvas.DrawImageUnscaled(_imageController.DayClouds[2], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)), -20);
+                canvas.DrawImageUnscaled(_imageController.DayClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 220, -20);
+                canvas.DrawImageUnscaled(_imageController.DayClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 400, -20);
                 #endregion
 
                 #region Sun
 
-                var sunX = TimeManager.SunX - (double)Sun.Width / 2.0;
-                var sunY = TimeManager.SunY - (double)Sun.Height / 2.0;
+                var sunX = TimeManager.SunX - (double)_imageController.Sun.Width / 2.0;
+                var sunY = TimeManager.SunY - (double)_imageController.Sun.Height / 2.0;
 
-                canvas.DrawImageUnscaled(Sun, (int)sunX, (int)sunY);
+                canvas.DrawImageUnscaled(_imageController.Sun, (int)sunX, (int)sunY);
                 #endregion
 
                 canvas.Save();
@@ -513,11 +447,11 @@ namespace DesktopSisters
                 canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Landscape
-                canvas.DrawImage(Landscape, new Rectangle(0, ResH - Landscape.Height, ((int)((double)ResW)), Landscape.Height));
+                canvas.DrawImage(_imageController.Landscape, new Rectangle(0, ResH - _imageController.Landscape.Height, ((int)((double)ResW)), _imageController.Landscape.Height));
                 #endregion
 
                 #region Celestia
-                canvas.DrawImage(Celestia, new Rectangle(20, ResH - Celestia.Height - 10, Celestia.Width, Celestia.Height));
+                canvas.DrawImage(_imageController.Celestia, new Rectangle(20, ResH - _imageController.Celestia.Height - 10, _imageController.Celestia.Width, _imageController.Celestia.Height));
                 #endregion
 
                 canvas.Save();
