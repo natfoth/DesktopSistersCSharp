@@ -29,62 +29,25 @@ namespace DesktopSisters
         private double _latitude;
         private double _longitude;
 
-        private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)[^0-9] (?<latC>[NS]), (?<long>\d\d[.][\d]+)[^0-9] (?<longC>[EW])", RegexOptions.Compiled);
+        public DateTime _dateTime;
 
-
-        public TimeManager(Configuration config)
+        public TimeManager(DateTime dateTime, double lat, double longi)
         {
             //_dateTime = DateTime.Parse("6:00 pm");
-            _dateTime = DateTime.Now;
-
-            _lastRealTime = DateTime.Now;
-            UpdateConfig(config);
+            _dateTime = dateTime;
+            _latitude = lat;
+            _longitude = longi;
         }
-
-        public void UpdateLatLong(string latLong)
-        {
-            if (latLong != null)
-            {
-                Tuple<string, string> parsed = GetGoogleLatLong(latLong);
-
-                if (parsed != null)
-                {
-                    _latitude = Util.ConvertDegree(parsed.Item1);
-                    _longitude = Util.ConvertDegree(parsed.Item2);
-                    Console.WriteLine(IsTwilight);
-                }
-            }
-        }
-
-        public DateTime _dateTime;
-        private DateTime _lastRealTime;
 
         public void Update()
         {
             //var timeSpan = DateTime.Now.Subtract(_lastRealTime);
             // _dateTime = _dateTime.AddMinutes(5);
-            _dateTime = DateTime.Now;
-            _lastRealTime = DateTime.Now;
 
             SetSunCycleRatio(_latitude, _longitude);
             CalculateSunPosition();
 
         }
-
-
-
-        private Tuple<string, string> GetGoogleLatLong(string latLong)
-        {
-            var match = _googleLatLongRegex.Match(latLong);
-
-            if (!match.Success)
-                return null;
-            var latitude = match.Groups["lat"].Value.Replace(".", "°") + "'" + match.Groups["latC"].Value;
-            var longitude = match.Groups["long"].Value.Replace(".", "°") + "'" + match.Groups["longC"].Value;
-
-            return new Tuple<string, string>(latitude, longitude);
-        }
-
 
         public bool IsTwilight
         {
@@ -176,11 +139,6 @@ namespace DesktopSisters
 
                 NightRatio = amountToSub / 12;
             }
-        }
-
-        public void UpdateConfig(Configuration config)
-        {
-            UpdateLatLong(config.Coordinates);
         }
     }
 

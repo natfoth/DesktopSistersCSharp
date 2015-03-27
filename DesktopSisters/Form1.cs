@@ -32,7 +32,7 @@ namespace DesktopSistersCSharpForm
             _config.Save();
 
             _sistersApp.UpdateConfig(_config);
-            _sistersApp.Update();
+            _sistersApp.UpdateScene();
         }
 
         private static Configuration TryLoadConfig()
@@ -73,7 +73,7 @@ namespace DesktopSistersCSharpForm
             _config.Save();
 
             _sistersApp.UpdateConfig(_config);
-            _sistersApp.Update();
+            _sistersApp.UpdateScene();
         }
     }
 }

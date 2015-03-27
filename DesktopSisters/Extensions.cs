@@ -16,5 +16,10 @@ namespace DesktopSistersCSharpForm
 
             return (double) d;
         }
+
+        public static byte[] ToByteArray(this System.Drawing.Color color)
+        {
+            return new[] {color.B, color.G, color.R, color.A};
+        }
     }
 }
