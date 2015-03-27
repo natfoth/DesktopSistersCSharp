@@ -25,7 +25,7 @@ namespace DesktopSisters
 
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
 
-            GenerateDayAndNightCycle();
+           // GenerateDayAndNightCycle();
 
             _pulse = new System.Timers.Timer();
             _pulse.Elapsed += Pulse;
