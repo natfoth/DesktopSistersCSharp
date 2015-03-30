@@ -12,6 +12,7 @@ namespace DesktopSisters
 
         
         public RenderController RenderController;
+        public EventController EventController;
 
         private System.Timers.Timer _pulse;
         private System.Timers.Timer _newSceneUpdateTimer;
@@ -20,6 +21,8 @@ namespace DesktopSisters
         {
             _config = config;
             _window = window;
+
+            
 
             RenderController = new RenderController(config);
 
@@ -62,8 +65,6 @@ namespace DesktopSisters
         public void UpdateScene()
         {
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper.bmp");
-            //TimeManager.UpdateScene();
-            // WallpaperManager.UpdateScene();
         }
 
         public void UpdateConfig(Configuration config)
@@ -71,8 +72,6 @@ namespace DesktopSisters
             _config = config;
 
             RenderController.UpdateConfig(config);
-           // WallpaperManager.UpdateConfig(config);
-           // TimeManager.UpdateConfig(config);
         }
 
         public void GenerateDayAndNightCycle()

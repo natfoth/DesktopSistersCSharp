@@ -86,6 +86,8 @@ namespace DesktopSistersCSharpForm
             return Image.FromFile(Path.Combine(directory, imageLocationName));
         }
 
+        
+
         public Image LoadNightImage(string name)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -96,6 +98,19 @@ namespace DesktopSistersCSharpForm
             var imageLocationName = string.Format("Night/Traditional/{0}", name);
             if (_config.UseNewArtStyle)
                 imageLocationName = string.Format("Night/New/{0}", name);
+
+
+            return Image.FromFile(Path.Combine(directory, imageLocationName));
+        }
+
+        public static Image LoadEventImage(string name)
+        {
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (directory == null)
+                return null;
+
+            var imageLocationName = string.Format("Events/Images/{0}", name);
 
 
             return Image.FromFile(Path.Combine(directory, imageLocationName));

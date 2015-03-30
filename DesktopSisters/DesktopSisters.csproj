@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DesktopSistersCSharpForm</RootNamespace>
-    <AssemblyName>DesktopSistersCSharpForm</AssemblyName>
+    <AssemblyName>DesktopSisters</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="EventController.cs" />
+    <Compile Include="Events\Dynamic\TwilightRandomSpawn.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -62,6 +64,7 @@
     <Compile Include="Sisters.cs" />
     <Compile Include="TimeManager.cs" />
     <Compile Include="Utils\BitmapUtils.cs" />
+    <Compile Include="Utils\ImgProcessingLibrary.cs" />
     <Compile Include="Utils\SunPosition.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="WallpaperManager.cs" />
@@ -131,6 +134,9 @@
     <Content Include="Day\Traditional\Sun.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Events\Images\twilight.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Night\New\FallingStar.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -185,6 +191,9 @@
     <Content Include="Night\Traditional\Triangle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Events\Static\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

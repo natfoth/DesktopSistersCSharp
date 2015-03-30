@@ -15,18 +15,17 @@ namespace DesktopSistersCSharpForm
     public class RenderScene
     {
         public String Filename { get; set; }
-        private TimeManager TimeManager;
         private WallpaperManager WallpaperManager;
         
 
-        public RenderScene(string fileName, DateTime timeToRender, ImageController _imageController, double lat, double longi, Configuration config)
+        public RenderScene(string fileName, DateTime timeToRender, ImageController _imageController, EventController eventController, double lat, double longi, Configuration config)
         {
             Filename = fileName;
 
-            TimeManager = new TimeManager(timeToRender, lat, longi);
-            TimeManager.Update();
+            var timeManager = new TimeManager(timeToRender, lat, longi);
+            timeManager.Update();
 
-            WallpaperManager = new WallpaperManager(TimeManager, _imageController, config);
+            WallpaperManager = new WallpaperManager(timeManager, _imageController, eventController, config);
         }
 
         public Bitmap RenderedScene => WallpaperManager.RenderToBitmap();
@@ -47,11 +46,14 @@ namespace DesktopSistersCSharpForm
         private double _longitude;
         private bool _rendering;
         private ImageController _imageController;
+        private EventController _eventController;
 
         public List<RenderScene> Scenes = new List<RenderScene>(); 
 
         public RenderController(Configuration config)
         {
+            _eventController = new EventController();
+
             _config = config;
             _imageController = new ImageController(config);
 
@@ -60,7 +62,7 @@ namespace DesktopSistersCSharpForm
 
         public void AddSceneToQueue(DateTime dateTime, string filename)
         {
-            var newScene = new RenderScene(filename, dateTime, _imageController, _latitude, _longitude, _config);
+            var newScene = new RenderScene(filename, dateTime, _imageController, _eventController, _latitude, _longitude, _config);
             Scenes.Add(newScene);
         }
 

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DesktopSisters.Utils;
 using DesktopSistersCSharpForm;
+using DesktopSistersCSharpForm.Utils;
 
 namespace DesktopSisters
 {
@@ -39,11 +40,13 @@ namespace DesktopSisters
     {
         private Configuration _config;
         private ImageController _imageController;
+        private EventController _eventController;
 
-        public WallpaperManager(TimeManager timeManager, ImageController imageController, Configuration config)
+        public WallpaperManager(TimeManager timeManager, ImageController imageController, EventController eventController, Configuration config)
         {
             TimeManager = timeManager;
             _imageController = imageController;
+            _eventController = eventController;
             _config = config;
         }
 
@@ -110,10 +113,6 @@ namespace DesktopSisters
 
             Benchmark.End();
             var miliseconds = Benchmark.GetMiliseconds();
-
-            //System.IO.File.WriteAllText(@"C:\Users\Nathaniel\Documents\WriteLines.txt", miliseconds.ToString());
-
-            int bob = 1;
         }
 
         #region Canvas Generation
@@ -162,7 +161,7 @@ namespace DesktopSisters
 
                         newColor[3] = 255;
 
-                        var color = Merge(new[] { imagePointer1[0], imagePointer1[1], imagePointer1[2], imagePointer1[3] }, newColor, 0.65);
+                        var color = ImgProcLib.Merge(new[] { imagePointer1[0], imagePointer1[1], imagePointer1[2], imagePointer1[3] }, newColor, 0.65);
 
                         imagePointer1[0] = color[0];
                         imagePointer1[1] = color[1];
@@ -195,8 +194,8 @@ namespace DesktopSisters
             if (TimeManager.IsTwilight)
             {
                 var item1 = TimeManager.GetSunPos().Item1;
-                backgroundColor = BlendColor(Color.FromArgb(204, 102, 102).ToByteArray(), backgroundColor, (item1 / -6));
-                horizonColor = BlendColor(Color.FromArgb(255, 200, 178).ToByteArray(), horizonColor, (item1 / -6));
+                backgroundColor = ImgProcLib.BlendColor(Color.FromArgb(204, 102, 102).ToByteArray(), backgroundColor, (item1 / -6));
+                horizonColor = ImgProcLib.BlendColor(Color.FromArgb(255, 200, 178).ToByteArray(), horizonColor, (item1 / -6));
             }
 
 
@@ -222,9 +221,9 @@ namespace DesktopSisters
 
                         var Dist = Math.Sqrt((moonX - x) * (moonX - x) + (moonY - y) * (moonY - y));
 
-                        var Base = BlendColor(backgroundColor, horizonColor, (double)y / (double)ResH);
-                        var Night = BlendColor(bleedColor, nightColor, ((double)(Math.Max(x - ResW + bleedWidth, 0))) / (double)bleedWidth);
-                        var BG = BlendColor(Base, Night, Night[2] / 255.0f); // blends the value of (red / 255)
+                        var Base = ImgProcLib.BlendColor(backgroundColor, horizonColor, (double)y / (double)ResH);
+                        var Night = ImgProcLib.BlendColor(bleedColor, nightColor, ((double)(Math.Max(x - ResW + bleedWidth, 0))) / (double)bleedWidth);
+                        var BG = ImgProcLib.BlendColor(Base, Night, Night[2] / 255.0f); // blends the value of (red / 255)
 
                         var color = BG;
                         if (Dist < innerCircle)
@@ -232,7 +231,7 @@ namespace DesktopSisters
                             var alphaToUse = Dist / innerCircle;
                             alphaToUse = (1.0 - alphaToUse) * 255.0;
 
-                            color = BlendColor(BG, Color.FromArgb(255, 255, 255, 255).ToByteArray(), (alphaToUse / 255) * 0.2);
+                            color = ImgProcLib.BlendColor(BG, Color.FromArgb(255, 255, 255, 255).ToByteArray(), (alphaToUse / 255) * 0.2);
                         }
 
                         imagePointer1[0] = color[0];
@@ -295,6 +294,8 @@ namespace DesktopSisters
                 canvas.DrawImage(_imageController.Luna, new Rectangle(20, ResH - _imageController.Luna.Height - 10, _imageController.Luna.Width, _imageController.Luna.Height));
                 #endregion
 
+                _eventController.RenderNightForgrounds(canvas, TimeManager.DateTime);
+
                 canvas.Save();
             }
         }
@@ -337,7 +338,7 @@ namespace DesktopSisters
                             alphaToUse = (1.0 - alphaToUse);
 
                             // BlendColor(inner_color, start_color, 1.0);
-                            var color = BlendColor(inner_color, start_color, alphaToUse);
+                            var color = ImgProcLib.BlendColor(inner_color, start_color, alphaToUse);
 
                             imagePointer1[0] = color[0];
                             imagePointer1[1] = color[1];
@@ -390,7 +391,7 @@ namespace DesktopSisters
                             alphaToUse = (1.0 - alphaToUse);
 
                             // BlendColor(inner_color, start_color, 1.0);
-                            var color = BlendColor(inner_color, start_color, alphaToUse);
+                            var color = ImgProcLib.BlendColor(inner_color, start_color, alphaToUse);
 
                             imagePointer1[0] = color[0];
                             imagePointer1[1] = color[1];
@@ -454,44 +455,13 @@ namespace DesktopSisters
                 canvas.DrawImage(_imageController.Celestia, new Rectangle(20, ResH - _imageController.Celestia.Height - 10, _imageController.Celestia.Width, _imageController.Celestia.Height));
                 #endregion
 
+                _eventController.RenderDayForgrounds(canvas, TimeManager.DateTime);
+
                 canvas.Save();
             }
         }
 
-        public byte[] BlendColor(byte[] firstColor, byte[] secondColor, double ratio)
-        {
-            double revRatio = 1.0f - ratio;
-
-            byte blue = (byte) (firstColor[0] * revRatio + secondColor[0] * ratio);
-            var green = (byte) (firstColor[1] * revRatio + secondColor[1] * ratio);
-            var red = (byte) (firstColor[2] * revRatio + secondColor[2] * ratio);
-            var alpha = (byte) (firstColor[3] * revRatio + secondColor[3] * ratio);
-
-            return new []{blue, green, red, (byte)255};
-        }
-
-        public byte[] Merge(byte[] dest, byte[] src, double opacity = 1.0)
-        {
-            int srcAlpha = (int)(src[3] * opacity);
-
-            if (srcAlpha <= 0)
-                return dest;
-            else if (srcAlpha == 255)
-            {
-                return src;
-            }
-
-            double newalpha = srcAlpha + (((255 - srcAlpha) * dest[3]) / 255.0);// / 255.0;
-            int alpha255 = (int)((dest[3] * (255 - srcAlpha)) / 255.0);//  /255.0;
-
-            newalpha = 1.0 / newalpha;
-
-            var blue = (byte)((src[0] * srcAlpha + (dest[0] * alpha255)) * newalpha);
-            var green = (byte)((src[1] * srcAlpha + (dest[1] * alpha255)) * newalpha);
-            var red = (byte)((src[2] * srcAlpha + (dest[2] * alpha255)) * newalpha);
-
-            return new[] { blue, green, red, (byte)255 };
-        }
+        
 
     }
 }

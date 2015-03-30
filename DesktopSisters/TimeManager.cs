@@ -29,12 +29,12 @@ namespace DesktopSisters
         private double _latitude;
         private double _longitude;
 
-        public DateTime _dateTime;
+        public DateTime DateTime;
 
         public TimeManager(DateTime dateTime, double lat, double longi)
         {
             //_dateTime = DateTime.Parse("6:00 pm");
-            _dateTime = dateTime;
+            DateTime = dateTime;
             _latitude = lat;
             _longitude = longi;
         }
@@ -67,12 +67,12 @@ namespace DesktopSisters
 
         public Tuple<double, double> GetSunPos()
         {
-            return SunPosition.CalculateSunPosition(_dateTime, _latitude, _longitude);
+            return SunPosition.CalculateSunPosition(DateTime, _latitude, _longitude);
         }
 
 //Math.Abs(((_dateTime - SunSet).TotalMinutes)) < 60
 
-        public bool IsNightTime => (_dateTime - SunRise).TotalSeconds < 0 || (_dateTime - SunSet).TotalSeconds > 0;
+        public bool IsNightTime => (DateTime - SunRise).TotalSeconds < 0 || (DateTime - SunSet).TotalSeconds > 0;
 
         public bool IsDayTime => !IsNightTime;
 
@@ -98,10 +98,10 @@ namespace DesktopSisters
 
         public void SetSunCycleRatio(double Latitude, double Longitude)
         {
-            var julianDate = _dateTime.ToOADate() + 2415018.5;
+            var julianDate = DateTime.ToOADate() + 2415018.5;
 
 
-            var date = _dateTime;
+            var date = DateTime;
 
             var zone = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
 
@@ -116,12 +116,12 @@ namespace DesktopSisters
             var sunRiseHour = sunriseString.Split(':').First();
             var sunRiseMinute = sunriseString.Split(':').Last();
 
-            SunRise = new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day, int.Parse(sunRiseHour), int.Parse(sunRiseMinute), 0);
+            SunRise = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, int.Parse(sunRiseHour), int.Parse(sunRiseMinute), 0);
             
             var sunSetMinute = sunsetString.Split(':').Last();
             var sunSetHour = sunsetString.Split(':').First();
 
-            SunSet = new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
+            SunSet = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
 
             var currentTimeDec = date.ToDouble();
             var sunRiseTimeDec = SunRise.ToDouble();
