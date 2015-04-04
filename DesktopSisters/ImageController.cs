@@ -56,6 +56,11 @@ namespace DesktopSistersCSharpForm
                 canvas.Save();
             }
 
+            LoadImages();
+        }
+
+        public void LoadImages()
+        {
             Luna = LoadNightImage("Luna.png");
             Moon = LoadNightImage("Moon.png");
             LandscapeNight = LoadNightImage("LandscapeNight.png");
@@ -69,6 +74,11 @@ namespace DesktopSistersCSharpForm
             Sun = LoadDayImage("Sun.png");
             Landscape = LoadDayImage("Landscape.png");
             DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };
+        }
+
+        public void Update()
+        {
+            LoadImages();
         }
 
         public Image LoadDayImage(string name)

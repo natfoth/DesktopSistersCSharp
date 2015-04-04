@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using DesktopSisters;
 using DesktopSistersCSharpForm.Events.Dynamic;
 
 namespace DesktopSistersCSharpForm
@@ -22,9 +23,9 @@ namespace DesktopSistersCSharpForm
 
         public virtual bool DrawNightBackground() { return false; }
 
-        public virtual void DrawDayForeground(Graphics g) { }
+        public virtual void DrawDayForeground(Graphics g, TimeManager timeManager) { }
 
-        public virtual void DrawNightForeground(Graphics g) { }
+        public virtual void DrawNightForeground(Graphics g, TimeManager timeManager) { }
 
         public abstract bool CanRun(DateTime time);
 
@@ -53,23 +54,23 @@ namespace DesktopSistersCSharpForm
             GenerateRandomEvents();
         }
 
-        public void RenderDayForgrounds(Graphics g, DateTime time)
+        public void RenderDayForgrounds(Graphics g, TimeManager timeManager)
         {
-            var events = EventsForTime(time);
+            var events = EventsForTime(timeManager.DateTime);
 
             foreach (var @event in events)
             {
-                @event.DrawDayForeground(g);
+                @event.DrawDayForeground(g, timeManager);
             }
         }
 
-        public void RenderNightForgrounds(Graphics g, DateTime time)
+        public void RenderNightForgrounds(Graphics g, TimeManager timeManager)
         {
-            var events = EventsForTime(time);
+            var events = EventsForTime(timeManager.DateTime);
 
             foreach (var @event in events)
             {
-                @event.DrawNightForeground(g);
+                @event.DrawNightForeground(g, timeManager);
             }
         }
 
@@ -90,6 +91,9 @@ namespace DesktopSistersCSharpForm
 
                 foreach (var @event in GetRandomEvent())
                 {
+                    if(!@event.CanRun(time))
+                        continue;
+
                     var newEvent = @event.Clone();
 
                     newEvent.StartTime = time;

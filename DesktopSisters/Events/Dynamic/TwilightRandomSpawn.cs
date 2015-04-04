@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DesktopSisters;
 
 namespace DesktopSistersCSharpForm.Events.Dynamic
 {
@@ -20,12 +21,12 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
             return TimeSpan.FromMinutes(30);
         }
 
-        public override void DrawDayForeground(Graphics g)
+        public override void DrawDayForeground(Graphics g, TimeManager timeManager)
         {
             
         }
 
-        public override void DrawNightForeground(Graphics g)
+        public override void DrawNightForeground(Graphics g, TimeManager timeManager)
         {
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 

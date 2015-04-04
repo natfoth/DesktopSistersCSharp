@@ -103,6 +103,7 @@ namespace DesktopSistersCSharpForm
         public void UpdateConfig(Configuration config)
         {
             UpdateLatLong(config.Coordinates);
+            _imageController.Update();
         }
 
         private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)[^0-9] (?<latC>[NS]), (?<long>\d\d[.][\d]+)[^0-9] (?<longC>[EW])", RegexOptions.Compiled);

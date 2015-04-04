@@ -294,7 +294,7 @@ namespace DesktopSisters
                 canvas.DrawImage(_imageController.Luna, new Rectangle(20, ResH - _imageController.Luna.Height - 10, _imageController.Luna.Width, _imageController.Luna.Height));
                 #endregion
 
-                _eventController.RenderNightForgrounds(canvas, TimeManager.DateTime);
+                _eventController.RenderNightForgrounds(canvas, TimeManager);
 
                 canvas.Save();
             }
@@ -431,10 +431,16 @@ namespace DesktopSisters
 
                 #region Sun
 
-                var sunX = TimeManager.SunX - (double)_imageController.Sun.Width / 2.0;
-                var sunY = TimeManager.SunY - (double)_imageController.Sun.Height / 2.0;
+                
 
-                canvas.DrawImageUnscaled(_imageController.Sun, (int)sunX, (int)sunY);
+                var sunHeight = Math.Min(_imageController.Sun.Height, ResH / 3.4);
+                var ratio = (double)sunHeight / _imageController.Sun.Height;
+                var sunWidth = (int)(_imageController.Sun.Width * ratio);
+
+                var sunX = TimeManager.SunX - (double)sunWidth / 2.0;
+                var sunY = TimeManager.SunY - (double)sunHeight / 2.0;
+
+                canvas.DrawImage(_imageController.Sun, new Rectangle((int) sunX, (int) sunY, sunWidth, (int) sunHeight));
                 #endregion
 
                 canvas.Save();
@@ -451,11 +457,15 @@ namespace DesktopSisters
                 canvas.DrawImage(_imageController.Landscape, new Rectangle(0, ResH - _imageController.Landscape.Height, ((int)((double)ResW)), _imageController.Landscape.Height));
                 #endregion
 
+                var celestiaHeight = Math.Min(_imageController.Celestia.Height, 450);
+                var ratio = (double)celestiaHeight / _imageController.Celestia.Height;
+                var celestWidth = (int)(_imageController.Celestia.Width * ratio);
+
                 #region Celestia
-                canvas.DrawImage(_imageController.Celestia, new Rectangle(20, ResH - _imageController.Celestia.Height - 10, _imageController.Celestia.Width, _imageController.Celestia.Height));
+                canvas.DrawImage(_imageController.Celestia, new Rectangle(20, ResH - celestiaHeight - 10, celestWidth, celestiaHeight));
                 #endregion
 
-                _eventController.RenderDayForgrounds(canvas, TimeManager.DateTime);
+                _eventController.RenderDayForgrounds(canvas, TimeManager);
 
                 canvas.Save();
             }
