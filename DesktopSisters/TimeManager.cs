@@ -113,6 +113,13 @@ namespace DesktopSisters
             var sunriseString = Util.getTimeString(sunRise, zone, jd, false);
             var sunsetString = Util.getTimeString(sunSet, zone, jd, false);
 
+            if (sunriseString == "error" || sunsetString == "error")
+            {
+                DayRatio = 0.0;
+                NightRatio = 0.0;
+                return;
+            }
+
             var sunRiseHour = sunriseString.Split(':').First();
             var sunRiseMinute = sunriseString.Split(':').Last();
 

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DesktopSisters;
 using DesktopSisters.Utils;
+using GoogleMaps.LocationServices;
 
 namespace DesktopSistersCSharpForm
 {
@@ -42,8 +43,6 @@ namespace DesktopSistersCSharpForm
 
         private Configuration _config;
 
-        private double _latitude;
-        private double _longitude;
         private bool _rendering;
         private ImageController _imageController;
         private EventController _eventController;
@@ -62,7 +61,7 @@ namespace DesktopSistersCSharpForm
 
         public void AddSceneToQueue(DateTime dateTime, string filename)
         {
-            var newScene = new RenderScene(filename, dateTime, _imageController, _eventController, _latitude, _longitude, _config);
+            var newScene = new RenderScene(filename, dateTime, _imageController, _eventController, _config.Latitude, _config.Longitude, _config);
             Scenes.Add(newScene);
         }
 
@@ -102,36 +101,10 @@ namespace DesktopSistersCSharpForm
         #region Config
         public void UpdateConfig(Configuration config)
         {
-            UpdateLatLong(config.Coordinates);
             _imageController.Update();
         }
 
-        private Regex _googleLatLongRegex = new Regex(@"(?<lat>\d\d[.][\d]+)[^0-9] (?<latC>[NS]), (?<long>\d\d[.][\d]+)[^0-9] (?<longC>[EW])", RegexOptions.Compiled);
-        public void UpdateLatLong(string latLong)
-        {
-            if (latLong != null)
-            {
-                Tuple<string, string> parsed = GetGoogleLatLong(latLong);
-
-                if (parsed != null)
-                {
-                    _latitude = Util.ConvertDegree(parsed.Item1);
-                    _longitude = Util.ConvertDegree(parsed.Item2);
-                }
-            }
-        }
-
-        private Tuple<string, string> GetGoogleLatLong(string latLong)
-        {
-            var match = _googleLatLongRegex.Match(latLong);
-
-            if (!match.Success)
-                return null;
-            var latitude = match.Groups["lat"].Value.Replace(".", "°") + "'" + match.Groups["latC"].Value;
-            var longitude = match.Groups["long"].Value.Replace(".", "°") + "'" + match.Groups["longC"].Value;
-
-            return new Tuple<string, string>(latitude, longitude);
-        }
+        
         #endregion
 
     }

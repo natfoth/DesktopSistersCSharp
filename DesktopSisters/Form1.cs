@@ -69,11 +69,21 @@ namespace DesktopSistersCSharpForm
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            
+        }
+
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
             _config.Coordinates = textBox1.Text;
-            _config.Save();
+            _config.UpdateLatLong();
 
             _sistersApp.UpdateConfig(_config);
             _sistersApp.UpdateScene();
+        }
+
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            //not needed atm
         }
     }
 }
