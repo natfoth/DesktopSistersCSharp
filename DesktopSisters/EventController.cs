@@ -39,6 +39,11 @@ namespace DesktopSistersCSharpForm
 
             return newEvent;
         }*/
+
+        public override string ToString()
+        {
+            return String.Format("{0} - Start Time {1} : End Time {2}", GetType().Name, StartTime.ToString("t"), EndTime.ToString("t"));
+        }
     }
 
     public class EventController
