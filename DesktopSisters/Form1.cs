@@ -14,16 +14,17 @@ namespace DesktopSistersCSharpForm
     public partial class Form1 : Form
     {
         private Sisters _sistersApp;
-        private readonly Configuration _config;
+
         public Form1()
         {
             InitializeComponent();
 
-            _config = TryLoadConfig();
-            _sistersApp = new Sisters(_config, this);
+            Configuration.LoadConfig("config.ini");
 
-            useNewArtCheckbox.Checked = _config.UseNewArtStyle;
-            textBox1.Text = _config.Coordinates;
+            _sistersApp = new Sisters(this);
+
+            useNewArtCheckbox.Checked = Configuration.Instance.UseNewArtStyle;
+            textBox1.Text = Configuration.Instance.Coordinates;
             toolStripMenuItem1.Click += ToolStripMenuItem1OnClick;
             toolStripMenuItem2.Click += ToolStripMenuItem2OnClick;
         }
@@ -35,24 +36,13 @@ namespace DesktopSistersCSharpForm
 
         private void useNewArtCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            _config.UseNewArtStyle = useNewArtCheckbox.Checked;
-            _config.Save();
+            Configuration.Instance.UseNewArtStyle = useNewArtCheckbox.Checked;
+            Configuration.Instance.Save();
 
-            _sistersApp.UpdateConfig(_config);
+            _sistersApp.UpdateConfig();
             _sistersApp.UpdateScene();
         }
 
-        private static Configuration TryLoadConfig()
-        {
-            try
-            {
-                return Configuration.LoadConfig("config.ini");
-            }
-            catch (Exception ex)
-            {
-                throw new HandledFatalException(ex, "There was a Fatal Error Reading your Configuration File!");
-            }
-        }
 
         public static void WriteExceptionFailureMessage(Exception ex, params string[] messages)
         {
@@ -87,10 +77,10 @@ namespace DesktopSistersCSharpForm
 
         private void textBox1_Leave(object sender, EventArgs e)
         {
-            _config.Coordinates = textBox1.Text;
-            _config.UpdateLatLong();
+            Configuration.Instance.Coordinates = textBox1.Text;
+            Configuration.Instance.UpdateLatLong();
 
-            _sistersApp.UpdateConfig(_config);
+            _sistersApp.UpdateConfig();
             _sistersApp.UpdateScene();
         }
 

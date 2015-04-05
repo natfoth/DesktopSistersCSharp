@@ -38,16 +38,14 @@ namespace DesktopSisters
 
     public class WallpaperManager
     {
-        private Configuration _config;
         private ImageController _imageController;
         private EventController _eventController;
 
-        public WallpaperManager(TimeManager timeManager, ImageController imageController, EventController eventController, Configuration config)
+        public WallpaperManager(TimeManager timeManager, ImageController imageController, EventController eventController)
         {
             TimeManager = timeManager;
             _imageController = imageController;
             _eventController = eventController;
-            _config = config;
         }
 
         public TimeManager TimeManager;
@@ -55,9 +53,9 @@ namespace DesktopSisters
         public int ResW;
         public int ResH;
 
-        
 
         public Bitmap Wallpaper;
+
 
         public NightColors NightColors = new NightColors();
         public DayColors DayColors = new DayColors();
@@ -70,16 +68,13 @@ namespace DesktopSisters
             ResH = resolution.Height;
 
             Wallpaper = new Bitmap(ResW, ResH);
-
-            
-
         }
 
         
 
-        public void UpdateConfig(Configuration config)
+        public void UpdateConfig()
         {
-            _config = config;
+            
         }
 
         
@@ -104,77 +99,13 @@ namespace DesktopSisters
 
             if (TimeManager.IsDayTime)
             {
-                GenerateDayBackground();
-                GenerateDaySky();
-                GenerateDayForground();
-            }
 
-             GenerateCanvasEffect();
+            }
 
             Benchmark.End();
             var miliseconds = Benchmark.GetMiliseconds();
         }
 
-        #region Canvas Generation
-        public void GenerateCanvasEffect()
-        {
-            BitmapData bitmapData1 = Wallpaper.LockBits(new Rectangle(0, 0,
-                                     Wallpaper.Width, Wallpaper.Height),
-                                     ImageLockMode.ReadWrite,
-                                     PixelFormat.Format32bppArgb);
-
-            BitmapData bitmapDataCanvas = _imageController.Canvas.LockBits(new Rectangle(0, 0,
-                                     _imageController.Canvas.Width, _imageController.Canvas.Height),
-                                     ImageLockMode.ReadWrite,
-                                     PixelFormat.Format32bppArgb);
-
-            byte bitsPerPixel = 4;
-
-            unsafe
-            {
-                byte* scan0 = (byte*)bitmapData1.Scan0.ToPointer();
-                byte* scan1 = (byte*)bitmapDataCanvas.Scan0.ToPointer();
-
-                Parallel.For(0, bitmapData1.Height, y =>
-                {
-                    Parallel.For(0, bitmapData1.Width, x =>
-                    {
-                        var imagePointer1 = scan0 + y * bitmapData1.Stride + x * bitsPerPixel;
-                        var imagePointerCanvas = scan1 + y * bitmapDataCanvas.Stride + x * bitsPerPixel;
-
-                        byte[] newColor = new byte[4];
-
-                        if (imagePointer1[0] < 128)
-                            newColor[0] = (byte)((2 * imagePointer1[0] * imagePointerCanvas[0]) / 255);
-                        else
-                            newColor[0] = (byte)(255 - (2 * (255 - imagePointerCanvas[0]) * (255 - imagePointer1[0])) / 255);
-
-                        if (imagePointer1[1] < 128)
-                            newColor[1] = (byte)((2 * imagePointer1[1] * imagePointerCanvas[1]) / 255);
-                        else
-                            newColor[1] = (byte)(255 - (2 * (255 - imagePointerCanvas[1]) * (255 - imagePointer1[1])) / 255);
-
-                        if (imagePointer1[2] < 128)
-                            newColor[2] = (byte)((2 * imagePointer1[2] * imagePointerCanvas[2]) / 255);
-                        else
-                            newColor[2] = (byte)(255 - (2 * (255 - imagePointerCanvas[2]) * (255 - imagePointer1[2])) / 255);
-
-                        newColor[3] = 255;
-
-                        var color = ImgProcLib.Merge(new[] { imagePointer1[0], imagePointer1[1], imagePointer1[2], imagePointer1[3] }, newColor, 0.65);
-
-                        imagePointer1[0] = color[0];
-                        imagePointer1[1] = color[1];
-                        imagePointer1[2] = color[2];
-                        imagePointer1[3] = 255;
-                    });
-                });
-
-            }//end unsafe
-            Wallpaper.UnlockBits(bitmapData1);
-            _imageController.Canvas.UnlockBits(bitmapDataCanvas);
-        }
-        #endregion
 
         #region Night Generation
         public void GenerateNightBackground()
@@ -246,26 +177,26 @@ namespace DesktopSisters
         }
         public void GenerateNightSky()
         {
-            using (var canvas = Graphics.FromImage(Wallpaper))
+            using (var g = Graphics.FromImage(Wallpaper))
             {
-                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 #region Stars
-                canvas.DrawImage(_imageController.Stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
+                g.DrawImage(_imageController.Stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
                 #endregion
 
                 #region Clouds
-                canvas.DrawImageUnscaled(_imageController.NightClouds[2], (int) (ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)), -20);
-                canvas.DrawImageUnscaled(_imageController.NightClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 220, -20);
-                canvas.DrawImageUnscaled(_imageController.NightClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, -20);
+                g.DrawImageUnscaled(_imageController.NightClouds[2], (int) (ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)), -20);
+                g.DrawImageUnscaled(_imageController.NightClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 220, -20);
+                g.DrawImageUnscaled(_imageController.NightClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, -20);
                 #endregion
 
                 #region Falling Star
-                canvas.DrawImageUnscaled(_imageController.FallingStar, (int) ((double)TimeManager.NightRatio * (double)ResW) + 500, 200);
+                g.DrawImageUnscaled(_imageController.FallingStar, (int) ((double)TimeManager.NightRatio * (double)ResW) + 500, 200);
                 #endregion
 
                 #region Triangle
-                canvas.DrawImageUnscaled(_imageController.Triangle, (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
+                g.DrawImageUnscaled(_imageController.Triangle, (int)(ResW - ((double)(1.0 - TimeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
                 #endregion
 
                 #region Moon
@@ -273,10 +204,10 @@ namespace DesktopSisters
                 var moonX = TimeManager.MoonX - (double)_imageController.Moon.Width/2.0;
                 var moonY = TimeManager.MoonY - (double)_imageController.Moon.Height / 2.0;
 
-                canvas.DrawImageUnscaled(_imageController.Moon, (int) moonX, (int) moonY);
+                g.DrawImageUnscaled(_imageController.Moon, (int) moonX, (int) moonY);
                 #endregion
 
-                canvas.Save();
+                g.Save();
             }
         }
 
@@ -294,184 +225,13 @@ namespace DesktopSisters
                 canvas.DrawImage(_imageController.Luna, new Rectangle(20, ResH - _imageController.Luna.Height - 10, _imageController.Luna.Width, _imageController.Luna.Height));
                 #endregion
 
-                _eventController.RenderNightForgrounds(canvas, TimeManager);
+              //  _eventController.RenderNightForgrounds(canvas, TimeManager);
 
                 canvas.Save();
             }
         }
         #endregion
 
-        public void GenerateDayBackground()
-        {
-            var innerCircle = 1000.0 * ResW * 1.0 / 1680.0;
-            //INNER_CIRCLE = 1000;
-            var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
-            var SunX = TimeManager.SunX;
-            var SunY = TimeManager.SunY;
-
-            byte[] inner_color = new[] { DayColors.InnerColor.B, DayColors.InnerColor.G, DayColors.InnerColor.R, DayColors.InnerColor.A };
-            byte[] start_color = new[] { DayColors.StartColor.B, DayColors.StartColor.G, DayColors.StartColor.R, DayColors.StartColor.A };
-
-
-            BitmapData bitmapData1 = Wallpaper.LockBits(new Rectangle(0, 0,
-                                     Wallpaper.Width, Wallpaper.Height),
-                                     ImageLockMode.ReadOnly,
-                                     PixelFormat.Format32bppArgb);
-
-            byte bitsPerPixel = 4;
-
-            unsafe
-            {
-                byte* scan0 = (byte*)bitmapData1.Scan0.ToPointer();
-
-                Parallel.For(0, bitmapData1.Height, y =>
-                {
-                    Parallel.For(0, bitmapData1.Width, x =>
-                    {
-                        var imagePointer1 = scan0 + y * bitmapData1.Stride + x * bitsPerPixel;
-
-                        var dist = Math.Sqrt((SunX - x) * (SunX - x) + (SunY - y) * (SunY - y));
-
-                        if (dist < innerCircle)
-                        {
-                            var alphaToUse = dist / innerCircle;
-                            alphaToUse = (1.0 - alphaToUse);
-
-                            // BlendColor(inner_color, start_color, 1.0);
-                            var color = ImgProcLib.BlendColor(inner_color, start_color, alphaToUse);
-
-                            imagePointer1[0] = color[0];
-                            imagePointer1[1] = color[1];
-                            imagePointer1[2] = color[2];
-                            imagePointer1[3] = 255;
-                        }
-                        else
-                        {
-                            imagePointer1[0] = inner_color[0];
-                            imagePointer1[1] = inner_color[1];
-                            imagePointer1[2] = inner_color[2];
-                            imagePointer1[3] = 255;
-                        }
-                    });
-                });
-
-            }//end unsafe
-            Wallpaper.UnlockBits(bitmapData1);
-        }
-
-        public void GenerateDayBackgroundEffect()
-        {
-            var innerCircle = 1000.0 * ResW * 1.0 / 1680.0;
-            //INNER_CIRCLE = 1000;
-            var outerCircle = 1000.0 * ResW * 1.0 / 1680.0;
-            var SunX = TimeManager.SunX;
-            var SunY = TimeManager.SunY;
-
-
-            BitmapData bitmapData1 = Wallpaper.LockBits(new Rectangle(0, 0,
-                                     Wallpaper.Width, Wallpaper.Height),
-                                     ImageLockMode.ReadOnly,
-                                     PixelFormat.Format32bppArgb);
-            int a = 0;
-            byte[] inner_color = new[] { DayColors.InnerColor.B, DayColors.InnerColor.G, DayColors.InnerColor.R, DayColors.InnerColor.A };
-            byte[] start_color = new[] { DayColors.StartColor.B, DayColors.StartColor.G, DayColors.StartColor.R, DayColors.StartColor.A };
-            unsafe
-            {
-                byte* imagePointer1 = (byte*)bitmapData1.Scan0;
-
-                for (int y = 0; y < bitmapData1.Height; y++)
-                {
-                    for (int x = 0; x < bitmapData1.Width; x++)
-                    {
-                        var dist = Math.Sqrt((SunX - x) * (SunX - x) + (SunY - y) * (SunY - y));
-
-                        if (dist < innerCircle)
-                        {
-                            var alphaToUse = dist / innerCircle;
-                            alphaToUse = (1.0 - alphaToUse);
-
-                            // BlendColor(inner_color, start_color, 1.0);
-                            var color = ImgProcLib.BlendColor(inner_color, start_color, alphaToUse);
-
-                            imagePointer1[0] = color[0];
-                            imagePointer1[1] = color[1];
-                            imagePointer1[2] = color[2];
-                            imagePointer1[3] = 255;
-                        }
-                        else
-                        {
-                            imagePointer1[0] = inner_color[0];
-                            imagePointer1[1] = inner_color[1];
-                            imagePointer1[2] = inner_color[2];
-                            imagePointer1[3] = 255;
-                        }
-
-                        //4 bytes per pixel
-                        imagePointer1 += 4;
-                    }//end for j
-                     //4 bytes per pixel
-                    imagePointer1 += bitmapData1.Stride -
-                                    (bitmapData1.Width * 4);
-                }//end for i
-            }//end unsafe
-            Wallpaper.UnlockBits(bitmapData1);
-        }
-
-        public void GenerateDaySky()
-        {
-            using (var canvas = Graphics.FromImage(Wallpaper))
-            {
-                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                #region Clouds
-                canvas.DrawImageUnscaled(_imageController.DayClouds[2], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)), -20);
-                canvas.DrawImageUnscaled(_imageController.DayClouds[1], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 220, -20);
-                canvas.DrawImageUnscaled(_imageController.DayClouds[0], (int)(ResW - ((double)(1.0 - TimeManager.DayRatio) * (double)ResW * 0.5)) - 400, -20);
-                #endregion
-
-                #region Sun
-
-                
-
-                var sunHeight = Math.Min(_imageController.Sun.Height, ResH / 3.4);
-                var ratio = (double)sunHeight / _imageController.Sun.Height;
-                var sunWidth = (int)(_imageController.Sun.Width * ratio);
-
-                var sunX = TimeManager.SunX - (double)sunWidth / 2.0;
-                var sunY = TimeManager.SunY - (double)sunHeight / 2.0;
-
-                canvas.DrawImage(_imageController.Sun, new Rectangle((int) sunX, (int) sunY, sunWidth, (int) sunHeight));
-                #endregion
-
-                canvas.Save();
-            }
-        }
-
-        public void GenerateDayForground()
-        {
-            using (var canvas = Graphics.FromImage(Wallpaper))
-            {
-                canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                #region Landscape
-                canvas.DrawImage(_imageController.Landscape, new Rectangle(0, ResH - _imageController.Landscape.Height, ((int)((double)ResW)), _imageController.Landscape.Height));
-                #endregion
-
-                var celestiaHeight = Math.Min(_imageController.Celestia.Height, 450);
-                var ratio = (double)celestiaHeight / _imageController.Celestia.Height;
-                var celestWidth = (int)(_imageController.Celestia.Width * ratio);
-
-                #region Celestia
-                canvas.DrawImage(_imageController.Celestia, new Rectangle(20, ResH - celestiaHeight - 10, celestWidth, celestiaHeight));
-                #endregion
-
-                _eventController.RenderDayForgrounds(canvas, TimeManager);
-
-                canvas.Save();
-            }
-        }
-
-        
 
     }
 }

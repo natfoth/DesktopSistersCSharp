@@ -7,61 +7,87 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using DesktopSisters;
 using DesktopSisters.Utils;
 using GoogleMaps.LocationServices;
 
 namespace DesktopSistersCSharpForm
 {
-    public class RenderScene
+    public class Scene
     {
-        public String Filename { get; set; }
-        private WallpaperManager WallpaperManager;
-        
+        public string Filename { get; set; }
+        //private WallpaperManager _wallpaperManager;
+        private EventController _eventController;
 
-        public RenderScene(string fileName, DateTime timeToRender, ImageController _imageController, EventController eventController, double lat, double longi, Configuration config)
+        public Bitmap Wallpaper;
+        public int ResW;
+        public int ResH;
+
+        private TimeManager _timeManager;
+
+        public Scene(string fileName, DateTime timeToRender, ImageController imageController, EventController eventController)
         {
             Filename = fileName;
 
-            var timeManager = new TimeManager(timeToRender, lat, longi);
-            timeManager.Update();
+            Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
-            WallpaperManager = new WallpaperManager(timeManager, _imageController, eventController, config);
+            ResW = resolution.Width;
+            ResH = resolution.Height;
+
+            Wallpaper = new Bitmap(ResW, ResH);
+
+            _timeManager = new TimeManager(timeToRender, Configuration.Instance.Latitude, Configuration.Instance.Longitude);
+            _timeManager.Update();
+
+            Wallpaper = new Bitmap(ResW, ResH);
+
+            _eventController = eventController;
+
+            // _wallpaperManager = new WallpaperManager(timeManager, _imageController, eventController, config);
         }
 
-        public Bitmap RenderedScene => WallpaperManager.RenderToBitmap();
+        public void GenerateScene()
+        {
+            _eventController.RenderEvents(Wallpaper, _timeManager);
+        }
+
+        public Bitmap RenderToBitmap()
+        {
+            GenerateScene();
+            return Wallpaper;
+        }
+
+        public Bitmap RenderedScene => RenderToBitmap();
 
         public void Dispose()
         {
-            WallpaperManager.Wallpaper.Dispose();
+            Wallpaper.Dispose();
         }
     }
 
     public class RenderController
     {
         
-
-        private Configuration _config;
-
         private bool _rendering;
         private ImageController _imageController;
         private EventController _eventController;
 
-        public List<RenderScene> Scenes = new List<RenderScene>(); 
+        public List<Scene> Scenes = new List<Scene>(); 
 
         public RenderController(Configuration config)
         {
-            _eventController = new EventController();
+            _eventController = new EventController(config);
 
-            _config = config;
-            _imageController = new ImageController(config);
+            Configuration.Instance = config;
+            _imageController = new ImageController();
 
-            UpdateConfig(_config); 
+            UpdateConfig(); 
         }
 
         public void AddSceneToQueue(DateTime dateTime, string filename)
         {
-            var newScene = new RenderScene(filename, dateTime, _imageController, _eventController, _config.Latitude, _config.Longitude, _config);
+            var newScene = new Scene(filename, dateTime, _imageController, _eventController);
             Scenes.Add(newScene);
         }
 
@@ -99,7 +125,7 @@ namespace DesktopSistersCSharpForm
         private static UInt32 SPIF_UPDATEINIFILE = 0x1;
 
         #region Config
-        public void UpdateConfig(Configuration config)
+        public void UpdateConfig()
         {
             _imageController.Update();
         }

@@ -10,7 +10,7 @@ using DesktopSistersCSharpForm.Utils;
 
 namespace DesktopSistersCSharpForm.Events.Dynamic
 {
-    internal class TwilightRandomSpawn : Event
+    public class LunaDayChariot : Event
     {
         public override double Chance()
         {
@@ -24,7 +24,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override int ZIndex()
         {
-            return 25;
+            return 4;
         }
 
         public override void Draw(Bitmap frame, TimeManager timeManager)
@@ -36,9 +36,9 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
                 var twilightImage = ImageController.LoadEventImage("twilight.png");
 
-                var imageHeight = Math.Min(twilightImage.Height, _resH/4);
-                var ratio = (double) imageHeight/twilightImage.Height;
-                var imageWidth = (int) (twilightImage.Width*ratio);
+                var imageHeight = Math.Min(twilightImage.Height, _resH / 4);
+                var ratio = (double)imageHeight / twilightImage.Height;
+                var imageWidth = (int)(twilightImage.Width * ratio);
 
                 // var twilightSparkle = new SceneObject("twilight.png", new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight), 0);
 
@@ -56,7 +56,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override Event Clone()
         {
-            var newEvent = new TwilightRandomSpawn();
+            var newEvent = new LunaDayChariot();
             newEvent.StartTime = StartTime;
             newEvent.EndTime = EndTime;
 

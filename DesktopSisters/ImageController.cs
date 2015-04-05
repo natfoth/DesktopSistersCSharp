@@ -29,12 +29,9 @@ namespace DesktopSistersCSharpForm
         public Image Landscape;
         public Image[] DayClouds;
 
-        private Configuration _config;
 
-        public ImageController(Configuration config)
+        public ImageController()
         {
-            _config = config;
-
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
             var ResW = resolution.Width;
@@ -61,7 +58,7 @@ namespace DesktopSistersCSharpForm
 
         public void LoadImages()
         {
-            Luna = LoadNightImage("Luna.png");
+            /*Luna = LoadNightImage("Luna.png");
             Moon = LoadNightImage("Moon.png");
             LandscapeNight = LoadNightImage("LandscapeNight.png");
             Stars = LoadNightImage("Stars.png");
@@ -73,7 +70,7 @@ namespace DesktopSistersCSharpForm
             Celestia = LoadDayImage("Celestia.png");
             Sun = LoadDayImage("Sun.png");
             Landscape = LoadDayImage("Landscape.png");
-            DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };
+            DayClouds = new Image[3] { LoadDayImage("DayCloud1.png"), LoadDayImage("DayCloud2.png"), LoadDayImage("DayCloud3.png") };*/
         }
 
         public void Update()
@@ -81,7 +78,7 @@ namespace DesktopSistersCSharpForm
             LoadImages();
         }
 
-        public Image LoadDayImage(string name)
+        public static Image LoadDayImage(string name)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -89,7 +86,7 @@ namespace DesktopSistersCSharpForm
                 return null;
 
             var imageLocationName = string.Format("Day/Traditional/{0}", name);
-            if (_config.UseNewArtStyle)
+            if (Configuration.Instance.UseNewArtStyle)
                 imageLocationName = string.Format("Day/New/{0}", name);
 
 
@@ -98,7 +95,7 @@ namespace DesktopSistersCSharpForm
 
         
 
-        public Image LoadNightImage(string name)
+        public static Image LoadNightImage(string name)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -106,7 +103,7 @@ namespace DesktopSistersCSharpForm
                 return null;
 
             var imageLocationName = string.Format("Night/Traditional/{0}", name);
-            if (_config.UseNewArtStyle)
+            if (Configuration.Instance.UseNewArtStyle)
                 imageLocationName = string.Format("Night/New/{0}", name);
 
 

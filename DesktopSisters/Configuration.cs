@@ -10,6 +10,7 @@ namespace DesktopSisters
 {
     public class Configuration
     {
+        public static Configuration Instance;
         private string _path;
 
         // ReSharper disable once UnusedMember.Local
@@ -28,19 +29,19 @@ namespace DesktopSisters
         public double Longitude { get; set; } = 0;
 
         #region Load & Save
-        public static Configuration LoadConfig(string path)
+        public static void LoadConfig(string path)
         {
             if (!File.Exists(path))
             {
-                
-                return CreateDefaultConfig(path);
+                var config = CreateDefaultConfig(path);
+                Instance = config;
             }
             else
             {
                 var config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(path));
                 config._path = path;
                 config.UpdateLatLong();
-                return config;
+                Instance = config;
             }
         }
 

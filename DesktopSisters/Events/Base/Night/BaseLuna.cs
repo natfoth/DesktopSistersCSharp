@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using DesktopSisters;
 using DesktopSistersCSharpForm.Utils;
 
-namespace DesktopSistersCSharpForm.Events.Dynamic
+namespace DesktopSistersCSharpForm.Events.Base.Night
 {
-    internal class TwilightRandomSpawn : Event
+    class BaseLuna : Event
     {
+        public override void SetTimes(TimeManager timeManager)
+        {
+            StartTime = timeManager.SunSet;
+            EndTime = timeManager.SunRise;
+        }
+
         public override double Chance()
         {
-            return 1;
+            return 100;
         }
 
         public override TimeSpan Length()
@@ -27,23 +33,24 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
             return 25;
         }
 
+        private Image _luna = null;
         public override void Draw(Bitmap frame, TimeManager timeManager)
         {
             using (var g = Graphics.FromImage(frame))
             {
-                var ratioTime = Ratio(timeManager.DateTime);
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                if (_luna == null)
+                {
+                    _luna = ImageController.LoadNightImage("Luna.png");
+                }
+
+                g.DrawImage(_luna, new Rectangle(20, _resH - _luna.Height - 10, _luna.Width, _luna.Height));
 
 
-                var twilightImage = ImageController.LoadEventImage("twilight.png");
+                _luna.Dispose();
+                _luna = null;
 
-                var imageHeight = Math.Min(twilightImage.Height, _resH/4);
-                var ratio = (double) imageHeight/twilightImage.Height;
-                var imageWidth = (int) (twilightImage.Width*ratio);
-
-                // var twilightSparkle = new SceneObject("twilight.png", new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight), 0);
-
-                g.DrawImage(twilightImage,
-                    new Rectangle(_resW - imageWidth - 10, _resH - imageHeight - 10, imageWidth, imageHeight));
 
                 g.Save();
             }
@@ -51,12 +58,12 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override bool CanRun(TimeManager timeManager)
         {
-            return true;
+            return timeManager.IsNightTime;
         }
 
         public override Event Clone()
         {
-            var newEvent = new TwilightRandomSpawn();
+            var newEvent = new BaseLuna();
             newEvent.StartTime = StartTime;
             newEvent.EndTime = EndTime;
 

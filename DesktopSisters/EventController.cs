@@ -7,141 +7,122 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using DesktopSisters;
+using DesktopSisters.Utils;
+using DesktopSistersCSharpForm.Events.Base;
+using DesktopSistersCSharpForm.Events.Base.Day;
+using DesktopSistersCSharpForm.Events.Base.Night;
 using DesktopSistersCSharpForm.Events.Dynamic;
 using DesktopSistersCSharpForm.Utils;
 
 namespace DesktopSistersCSharpForm
 {
-    public abstract class Event
-    {
-        public DateTime StartTime = DateTime.Now;
-        public DateTime EndTime = DateTime.Now;
-
-        public abstract double Chance(); // between 0 - 100
-
-        public abstract TimeSpan Length();
-
-        public virtual bool DrawDayBackground() { return false; }
-
-        public virtual bool DrawNightBackground() { return false; }
-
-        public virtual void DrawDayForeground(Graphics g, TimeManager timeManager) { }
-
-        public virtual void DrawNightForeground(Graphics g, TimeManager timeManager) { }
-
-        public abstract bool CanRun(DateTime time);
-
-        public double Ratio(DateTime time)
-        {
-
-            var currentTimeDec = time.ToDouble();
-            var startTimeDec = StartTime.ToDouble();
-            var stopTimeDec = EndTime.ToDouble();
-
-            double ratio = (currentTimeDec - startTimeDec) / (stopTimeDec - startTimeDec);
-
-            return ratio;
-
-        }
-
-        public virtual Event Clone() { return null; }
-
-        /*public Event Clone()
-        {
-            var newEvent = new Event();
-            newEvent.StartTime = StartTime;
-            newEvent.EndTime = EndTime;
-
-            return newEvent;
-        }*/
-
-        public override string ToString()
-        {
-            return String.Format("{0} - Start Time {1} : End Time {2}", GetType().Name, StartTime.ToString("t"), EndTime.ToString("t"));
-        }
-    }
+    
 
     public class EventController
     {
-        private List<Event> _dynamicEvents = new List<Event>();
+        private List<Event> _events = new List<Event>();
 
         public List<Event> ActiveDynamicEvents = new List<Event>();
 
         private DesktopSistersRandom _randomGenerator;
 
-        public EventController()
+        public EventController(Configuration config)
         {
-            _dynamicEvents.Add(new TwilightRandomSpawn());
+            //base Events
+            _events.Add(new BaseDayBackground());
+            _events.Add(new BaseDayClouds());
+            _events.Add(new BaseSun());
+            _events.Add(new BaseDayLandscape());
+            _events.Add(new BaseCelestia());
+
+            _events.Add(new BaseNightBackground());
+            _events.Add(new BaseStars());
+            _events.Add(new BaseNightClouds());
+            _events.Add(new BaseFallingStar());
+            _events.Add(new BaseTriangle());
+            _events.Add(new BaseMoon());
+            _events.Add(new BaseNightLandscape());
+            _events.Add(new BaseLuna());
+
+
+
+
+            _events.Add(new BaseCanvas());
+
+            //end base events
+
+            _events.Add(new TwilightRandomSpawn());
 
             _randomGenerator = new DesktopSistersRandom();
 
-            GenerateRandomEvents();
+            GenerateEvents(config);
         }
 
-        public void RenderDayForgrounds(Graphics g, TimeManager timeManager)
+        public void RenderEvents(Bitmap scene, TimeManager timeManager)
         {
-            var events = EventsForTime(timeManager.DateTime);
+            Benchmark.Start();
+
+            var events = EventsForTime(timeManager).OrderBy(ntf => ntf.ZIndex()).ToList();
 
             foreach (var @event in events)
             {
-                @event.DrawDayForeground(g, timeManager);
+                @event.Draw(scene, timeManager);
             }
+
+            Benchmark.End();
+            var miliseconds = Benchmark.GetMiliseconds();
+            int bob = 1;
         }
 
-        public void RenderNightForgrounds(Graphics g, TimeManager timeManager)
-        {
-            var events = EventsForTime(timeManager.DateTime);
-
-            foreach (var @event in events)
-            {
-                @event.DrawNightForeground(g, timeManager);
-            }
-        }
-
-        private void GenerateRandomEvents()
+        private void GenerateEvents(Configuration config)
         {
             var time = DateTime.Parse("0:00 am");
             const int updateTime = 5; // in minutes
 
             for (int i = 0; i < 288; i++) // 
             {
-                if (EventsForTime(time).Count != 0)
+                var timeManager = new TimeManager(time, config.Latitude, config.Longitude);
+                timeManager.Update();
+
+                foreach (var @event in GetRandomEvent(timeManager))
                 {
-                    time = time.AddMinutes(updateTime);
-                    continue;
-                }
-
-                
-
-                foreach (var @event in GetRandomEvent())
-                {
-                    if(!@event.CanRun(time))
-                        continue;
-
                     var newEvent = @event.Clone();
+                    newEvent.Init(timeManager);
+                    newEvent.SetTimes(timeManager);
 
-                    newEvent.StartTime = time;
-                    newEvent.EndTime = time.Add(newEvent.Length());
+                    var eventsForTime = EventsForTime(timeManager);
+
+                    if (eventsForTime.Contains(newEvent))
+                    {
+                        newEvent.Dispose();
+                        continue;
+                    }
 
                     ActiveDynamicEvents.Add(newEvent);
+                    
                 }
 
                 time = time.AddMinutes(updateTime);
             }
 
+            ActiveDynamicEvents = ActiveDynamicEvents.OrderBy(ntf => ntf.StartTime).ToList();
+
             int bob = 1;
         }
 
-        private List<Event> GetRandomEvent()
+        private List<Event> GetRandomEvent(TimeManager time)
         {
             var list = new List<Event>();
 
 
             var rand = _randomGenerator.Next(0, 100000) / 1000.0;
 
-            foreach (var dynamicEvent in _dynamicEvents)
+            foreach (var dynamicEvent in _events)
             {
-                if (rand < dynamicEvent.Chance())
+                if(!dynamicEvent.CanRun(time))
+                    continue;
+                
+                if (rand <= dynamicEvent.Chance())
                     list.Add(dynamicEvent);
 
                 rand = _randomGenerator.Next(0, 100000) / 1000.0;
@@ -151,16 +132,60 @@ namespace DesktopSistersCSharpForm
             return list;
         }
 
-        private List<Event> EventsForTime(DateTime time)
+        private List<Event> EventsForTime(TimeManager timeManager)
         {
             var list = new List<Event>();
 
             foreach (var dynamicEvent in ActiveDynamicEvents)
             {
-                if (time.Ticks > dynamicEvent.StartTime.Ticks && time.Ticks < dynamicEvent.EndTime.Ticks)
+                if (timeManager.IsNightTime)
                 {
-                    list.Add(dynamicEvent);
+                    var currentTimeDec = timeManager.DateTime.ToDouble();
+                    var startEventTimeDec = dynamicEvent.StartTime.ToDouble();
+                    var endEventTimeDec = dynamicEvent.EndTime.ToDouble();
+
+                    if (currentTimeDec >= 12)
+                    {
+                        if (startEventTimeDec < endEventTimeDec)
+                        {
+                            if (currentTimeDec > startEventTimeDec && currentTimeDec < endEventTimeDec)
+                                list.Add(dynamicEvent);
+                        }
+                        else
+                        {
+                            var startPosition = endEventTimeDec - 12;
+
+                            var currentPosition = 0 - (24 - currentTimeDec);
+
+                            if (currentPosition > startPosition && currentPosition < endEventTimeDec)
+                                list.Add(dynamicEvent);
+                        }
+                    }
+                    else
+                    {
+                        if (startEventTimeDec < endEventTimeDec)
+                        {
+                            if (currentTimeDec > startEventTimeDec && currentTimeDec < endEventTimeDec)
+                                list.Add(dynamicEvent);
+                        }
+                        else
+                        {
+                            var startPosition = endEventTimeDec - 12;
+
+                            if (currentTimeDec > startPosition && currentTimeDec < endEventTimeDec)
+                                list.Add(dynamicEvent);
+                        }
+                    }
                 }
+                else
+                {
+                    if (timeManager.DateTime.Ticks > dynamicEvent.StartTime.Ticks && timeManager.DateTime.Ticks < dynamicEvent.EndTime.Ticks)
+                    {
+                        list.Add(dynamicEvent);
+                    }
+                }
+
+                
             }
 
             return list;

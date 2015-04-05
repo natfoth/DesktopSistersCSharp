@@ -7,7 +7,6 @@ namespace DesktopSisters
 {
     public class Sisters
     {
-        private Configuration _config;
         private readonly Form _window;
 
         
@@ -17,14 +16,12 @@ namespace DesktopSisters
         private System.Timers.Timer _pulse;
         private System.Timers.Timer _newSceneUpdateTimer;
 
-        public Sisters(Configuration config, Form window)
+        public Sisters(Form window)
         {
-            _config = config;
             _window = window;
 
-            
 
-            RenderController = new RenderController(config);
+            RenderController = new RenderController(Configuration.Instance);
 
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
 
@@ -67,11 +64,9 @@ namespace DesktopSisters
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper.bmp");
         }
 
-        public void UpdateConfig(Configuration config)
+        public void UpdateConfig()
         {
-            _config = config;
-
-            RenderController.UpdateConfig(config);
+            RenderController.UpdateConfig();
         }
 
         public void GenerateDayAndNightCycle()
