@@ -25,6 +25,12 @@ namespace DesktopSistersCSharpForm
             useNewArtCheckbox.Checked = _config.UseNewArtStyle;
             textBox1.Text = _config.Coordinates;
             toolStripMenuItem1.Click += ToolStripMenuItem1OnClick;
+            toolStripMenuItem2.Click += ToolStripMenuItem2OnClick;
+        }
+
+        private void ToolStripMenuItem2OnClick(object sender, EventArgs eventArgs)
+        {
+            Close();
         }
 
         private void useNewArtCheckbox_CheckedChanged(object sender, EventArgs e)
