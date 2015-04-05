@@ -24,6 +24,7 @@ namespace DesktopSistersCSharpForm
 
             useNewArtCheckbox.Checked = _config.UseNewArtStyle;
             textBox1.Text = _config.Coordinates;
+            toolStripMenuItem1.Click += ToolStripMenuItem1OnClick;
         }
 
         private void useNewArtCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -64,12 +65,18 @@ namespace DesktopSistersCSharpForm
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            System.Diagnostics.Process.Start("https://www.google.de/#q=New%20York%20City%20Latitude");
+            System.Diagnostics.Process.Start("https://www.google.com/#q=New%20York%20City%20Latitude");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             
+        }
+
+        private void ToolStripMenuItem1OnClick(object sender, EventArgs eventArgs)
+        {
+            Show();
+            Focus();
         }
 
         private void textBox1_Leave(object sender, EventArgs e)
@@ -84,6 +91,22 @@ namespace DesktopSistersCSharpForm
         private void applyButton_Click(object sender, EventArgs e)
         {
             //not needed atm
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            Focus();
+        }
+
+        private void Form1_Resize(object sender, EventArgs e) {
+            if (FormWindowState.Minimized == this.WindowState) {
+                //notifyIcon1.Visible = true;
+                notifyIcon1.ShowBalloonTip(500);
+                this.Hide();
+            } else if (FormWindowState.Normal == this.WindowState) {
+                //notifyIcon1.Visible = false;
+            }
         }
     }
 }
