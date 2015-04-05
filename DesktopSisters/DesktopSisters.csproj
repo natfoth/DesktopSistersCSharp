@@ -147,6 +147,9 @@
     <Content Include="Events\Images\twilight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="GoogleMaps.LocationServices\GoogleMaps.LocationServices.readme.txt" />
     <Content Include="Night\New\FallingStar.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
