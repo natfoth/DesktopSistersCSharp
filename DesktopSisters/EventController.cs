@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,19 @@ namespace DesktopSistersCSharpForm
         public virtual void DrawNightForeground(Graphics g, TimeManager timeManager) { }
 
         public abstract bool CanRun(DateTime time);
+
+        public double Ratio(DateTime time)
+        {
+
+            var currentTimeDec = time.ToDouble();
+            var startTimeDec = StartTime.ToDouble();
+            var stopTimeDec = EndTime.ToDouble();
+
+            double ratio = (currentTimeDec - startTimeDec) / (stopTimeDec - startTimeDec);
+
+            return ratio;
+
+        }
 
         public virtual Event Clone() { return null; }
 

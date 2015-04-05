@@ -23,6 +23,8 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override void DrawDayForeground(Graphics g, TimeManager timeManager)
         {
+            var ratioTime = Ratio(timeManager.DateTime);
+
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
             var ResW = resolution.Width;
