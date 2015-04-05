@@ -73,6 +73,7 @@
     <Compile Include="TimeManager.cs" />
     <Compile Include="Utils\BitmapUtils.cs" />
     <Compile Include="Utils\ImgProcessingLibrary.cs" />
+    <Compile Include="Utils\Random.cs" />
     <Compile Include="Utils\SunPosition.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="WallpaperManager.cs" />

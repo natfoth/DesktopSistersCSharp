@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DesktopSisters;
 using DesktopSistersCSharpForm.Events.Dynamic;
+using DesktopSistersCSharpForm.Utils;
 
 namespace DesktopSistersCSharpForm
 {
@@ -50,11 +51,15 @@ namespace DesktopSistersCSharpForm
     {
         private List<Event> _dynamicEvents = new List<Event>();
 
-        public List<Event> ActiveDynamicEvents = new List<Event>(); 
+        public List<Event> ActiveDynamicEvents = new List<Event>();
+
+        private DesktopSistersRandom _randomGenerator;
 
         public EventController()
         {
             _dynamicEvents.Add(new TwilightRandomSpawn());
+
+            _randomGenerator = new DesktopSistersRandom();
 
             GenerateRandomEvents();
         }
@@ -113,19 +118,19 @@ namespace DesktopSistersCSharpForm
             int bob = 1;
         }
 
-        private Random random = new Random();
         private List<Event> GetRandomEvent()
         {
             var list = new List<Event>();
 
-            var rand = (double)random.Next(0, 100000) / 1000.0;
+
+            var rand = _randomGenerator.Next(0, 100000) / 1000.0;
 
             foreach (var dynamicEvent in _dynamicEvents)
             {
                 if (rand < dynamicEvent.Chance())
                     list.Add(dynamicEvent);
 
-                rand = random.Next(0, 100);
+                rand = _randomGenerator.Next(0, 100000) / 1000.0;
             }
 
 
