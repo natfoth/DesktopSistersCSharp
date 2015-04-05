@@ -23,7 +23,20 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override void DrawDayForeground(Graphics g, TimeManager timeManager)
         {
-            
+            Rectangle resolution = Screen.PrimaryScreen.Bounds;
+
+            var ResW = resolution.Width;
+            var ResH = resolution.Height;
+
+            var twilightImage = ImageController.LoadEventImage("twilight.png");
+
+            var imageHeight = Math.Min(twilightImage.Height, ResH / 4);
+            var ratio = (double)imageHeight / twilightImage.Height;
+            var imageWidth = (int)(twilightImage.Width * ratio);
+
+
+
+            g.DrawImage(twilightImage, new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight));
         }
 
         public override void DrawNightForeground(Graphics g, TimeManager timeManager)
