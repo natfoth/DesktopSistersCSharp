@@ -98,9 +98,6 @@ namespace DesktopSisters
 
         public void SetSunCycleRatio(double Latitude, double Longitude)
         {
-            var julianDate = DateTime.ToOADate() + 2415018.5;
-
-
             var date = DateTime;
 
             var zone = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
