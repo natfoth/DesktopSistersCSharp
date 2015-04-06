@@ -43,6 +43,10 @@ namespace DesktopSistersCSharpForm.Utils
 
         public abstract bool CanRun(TimeManager timeManager);
         public virtual bool CanBeOverriden() { return true; }
+        public virtual int MaxEvents()
+        {
+            return 1;
+        }
 
         public double Ratio(DateTime time)
         {
@@ -81,8 +85,8 @@ namespace DesktopSistersCSharpForm.Utils
             var otherClass = ((object)other).GetType().Name;
 
             // Would still want to check for null etc. first.
-            return thisClass == otherClass && this.StartTime == other.StartTime &&
-                   this.EndTime == other.EndTime;
+            return thisClass == otherClass/* && this.StartTime == other.StartTime &&
+                   this.EndTime == other.EndTime*/;
         }
 
         public override string ToString()

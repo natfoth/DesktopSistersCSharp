@@ -52,6 +52,7 @@ namespace DesktopSistersCSharpForm
             //end base events
 
             _events.Add(new TwilightRandomSpawn());
+            _events.Add(new LunaDayChariot());
 
             _randomGenerator = new DesktopSistersRandom();
 
@@ -92,7 +93,7 @@ namespace DesktopSistersCSharpForm
 
                     var eventsForTime = EventsForTime(timeManager);
 
-                    if (eventsForTime.Contains(newEvent))
+                    if (eventsForTime.Count(ntf => ntf.Equals(@event)) >= newEvent.MaxEvents())
                     {
                         newEvent.Dispose();
                         continue;
@@ -153,7 +154,10 @@ namespace DesktopSistersCSharpForm
                         }
                         else
                         {
-                            var startPosition = endEventTimeDec - 12;
+                            var totalMins = Math.Abs((dynamicEvent.EndTime - dynamicEvent.StartTime).TotalMinutes);
+                            var eventLength = totalMins / 60;
+
+                            var startPosition = endEventTimeDec - eventLength;
 
                             var currentPosition = 0 - (24 - currentTimeDec);
 

@@ -14,7 +14,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
     {
         public override double Chance()
         {
-            return 1;
+            return 0;
         }
 
         public override TimeSpan Length()
@@ -31,21 +31,23 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
         {
             using (var g = Graphics.FromImage(frame))
             {
-                var ratioTime = Ratio(timeManager.DateTime);
+                var timeRatio = Ratio(timeManager.DateTime);
 
+                var lunaImage = ImageController.LoadEventImage("lunaChariot.png");
 
-                var twilightImage = ImageController.LoadEventImage("twilight.png");
-
-                var imageHeight = Math.Min(twilightImage.Height, _resH / 4);
-                var ratio = (double)imageHeight / twilightImage.Height;
-                var imageWidth = (int)(twilightImage.Width * ratio);
+                var imageHeight = Math.Min(lunaImage.Height, _resH / 4);
+                var ratio = (double)imageHeight / lunaImage.Height;
+                var imageWidth = (int)(lunaImage.Width * ratio);
 
                 // var twilightSparkle = new SceneObject("twilight.png", new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight), 0);
 
-                g.DrawImage(twilightImage,
-                    new Rectangle(_resW - imageWidth - 10, _resH - imageHeight - 10, imageWidth, imageHeight));
+                var xLocation = _resW - (_resW* timeRatio);
+
+                g.DrawImage(lunaImage, new Rectangle((int) xLocation, imageHeight + 30, imageWidth, imageHeight));
 
                 g.Save();
+
+                lunaImage.Dispose();
             }
         }
 
