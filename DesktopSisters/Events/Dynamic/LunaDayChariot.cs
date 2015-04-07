@@ -14,12 +14,12 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
     {
         public override double Chance()
         {
-            return 0;
+            return 3;
         }
 
         public override TimeSpan Length()
         {
-            return TimeSpan.FromMinutes(30);
+            return TimeSpan.FromMinutes(5);
         }
 
         public override int ZIndex()
@@ -53,7 +53,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override bool CanRun(TimeManager timeManager)
         {
-            return true;
+            return timeManager.IsDayTime;
         }
 
         public override Event Clone()

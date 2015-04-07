@@ -11,15 +11,15 @@ namespace DesktopSistersCSharpForm
         public static Double ToDouble(this DateTime datetime)
         {
             double d = datetime.Hour;
-            var prct = (double)datetime.Minute/ 60.0;
+            var prct = (double)datetime.Minute / 60.0;
             d = d + prct;
             d = Math.Round(d, 2, MidpointRounding.AwayFromZero);
-            var secPrct = ((double) datetime.Second / 60) / 100.0;
+            var secPrct = ((double)datetime.Second / 60) / 100.0;
             secPrct = Math.Round(secPrct, 4, MidpointRounding.AwayFromZero);
             d += secPrct;
             d = Math.Round(d, 4, MidpointRounding.AwayFromZero);
 
-            return (double) d;
+            return (double)d;
         }
 
         public static byte[] ToByteArray(this System.Drawing.Color color)
