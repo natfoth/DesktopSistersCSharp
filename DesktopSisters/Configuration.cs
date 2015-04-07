@@ -28,6 +28,8 @@ namespace DesktopSisters
         public double Latitude { get; set; } = 0;
         public double Longitude { get; set; } = 0;
 
+        public int UpdateInterval { get; set; } = 10;
+
         #region Load & Save
         public static void LoadConfig(string path)
         {

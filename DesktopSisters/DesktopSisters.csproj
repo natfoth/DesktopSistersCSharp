@@ -161,6 +161,9 @@
     <Content Include="Day\Traditional\Sun.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Events\Images\lunaChariot.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Events\Images\twilight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

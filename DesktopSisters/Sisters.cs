@@ -34,7 +34,7 @@ namespace DesktopSisters
 
             _newSceneUpdateTimer = new System.Timers.Timer();
             _newSceneUpdateTimer.Elapsed += AddScenePulse;
-            _newSceneUpdateTimer.Interval = 10 * 1000; // in miliseconds
+            _newSceneUpdateTimer.Interval = Configuration.Instance.UpdateInterval * 1000; // in miliseconds
             _newSceneUpdateTimer.Start();
         }
 
@@ -67,6 +67,13 @@ namespace DesktopSisters
         public void UpdateConfig()
         {
             RenderController.UpdateConfig();
+        }
+
+        public void UpdateTimer()
+        {
+            _newSceneUpdateTimer.Interval = Configuration.Instance.UpdateInterval * 1000; // in miliseconds
+            _newSceneUpdateTimer.Stop();
+            _newSceneUpdateTimer.Start();
         }
 
         public void GenerateDayAndNightCycle()

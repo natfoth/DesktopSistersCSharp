@@ -27,6 +27,7 @@ namespace DesktopSistersCSharpForm
             textBox1.Text = Configuration.Instance.Coordinates;
             toolStripMenuItem1.Click += ToolStripMenuItem1OnClick;
             toolStripMenuItem2.Click += ToolStripMenuItem2OnClick;
+            intervalBox.Value = Configuration.Instance.UpdateInterval;
         }
 
         private void ToolStripMenuItem2OnClick(object sender, EventArgs eventArgs)
@@ -103,6 +104,16 @@ namespace DesktopSistersCSharpForm
             } else if (FormWindowState.Normal == this.WindowState) {
                 //notifyIcon1.Visible = false;
             }
+        }
+
+        private void intervalBox_ValueChanged(object sender, EventArgs e)
+        {
+            Configuration.Instance.UpdateInterval = Math.Max((int) Math.Ceiling(intervalBox.Value), 1);
+            Configuration.Instance.Save();
+
+            intervalBox.Value = Configuration.Instance.UpdateInterval;
+
+            _sistersApp.UpdateTimer();
         }
     }
 }

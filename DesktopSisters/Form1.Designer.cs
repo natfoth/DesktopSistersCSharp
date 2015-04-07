@@ -43,9 +43,12 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.label4 = new System.Windows.Forms.Label();
+            this.intervalBox = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.intervalBox)).BeginInit();
             this.SuspendLayout();
             // 
             // useNewArtCheckbox
@@ -173,11 +176,35 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(103, 22);
             this.toolStripMenuItem2.Text = "Close";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(112, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Update Interval (sec) :";
+            // 
+            // intervalBox
+            // 
+            this.intervalBox.Location = new System.Drawing.Point(127, 79);
+            this.intervalBox.Name = "intervalBox";
+            this.intervalBox.Size = new System.Drawing.Size(104, 20);
+            this.intervalBox.TabIndex = 10;
+            this.intervalBox.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.intervalBox.ValueChanged += new System.EventHandler(this.intervalBox_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(356, 261);
+            this.Controls.Add(this.intervalBox);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox2);
@@ -193,6 +220,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.intervalBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -213,6 +241,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown intervalBox;
     }
 }
 
