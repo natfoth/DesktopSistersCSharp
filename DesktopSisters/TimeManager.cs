@@ -127,22 +127,16 @@ namespace DesktopSisters
 
             SunSet = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, int.Parse(sunSetHour), int.Parse(sunSetMinute), 0);
 
-            var currentTimeDec = date.ToDouble();
-            var sunRiseTimeDec = SunRise.ToDouble();
-            var sunSetTimeDec = SunSet.ToDouble();
+            if(IsDayTime)
+                DayRatio = (double)(date.Ticks - SunRise.Ticks) / (double)(SunSet.Ticks - SunRise.Ticks);
 
-            double startingSunRise = sunRiseTimeDec - 12; // 12 hours is the length of a cycle
+            if(IsNightTime)
+                NightRatio = (double)(date.Ticks - SunSet.Ticks) / (double)(SunSet.Ticks - SunRise.Ticks);
 
+            var prevDaySunSet = SunSet - TimeSpan.FromDays(1);
+            if (date.Hour <= 12 && IsNightTime)
+                NightRatio = (double)(date.Ticks - prevDaySunSet.Ticks) / (double)(SunRise.Ticks - prevDaySunSet.Ticks);
 
-            DayRatio = (currentTimeDec - sunRiseTimeDec) / (sunSetTimeDec - sunRiseTimeDec);
-            NightRatio = (currentTimeDec - startingSunRise) / (sunRiseTimeDec - startingSunRise);
-
-            if (currentTimeDec > sunSetTimeDec && currentTimeDec > 15)
-            {
-                var amountToSub = currentTimeDec - sunSetTimeDec;
-
-                NightRatio = amountToSub / 12;
-            }
         }
     }
 

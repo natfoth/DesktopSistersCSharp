@@ -23,8 +23,6 @@ namespace DesktopSisters
 
             RenderController = new RenderController(Configuration.Instance);
 
-            var dateTimetest = DateTime.Parse("08:30:59");
-            var test2 = dateTimetest.ToDouble();
 
             RenderController.AddSceneToQueue(DateTime.Now, "Wallpaper");
 

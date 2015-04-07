@@ -17,6 +17,7 @@ namespace DesktopSistersCSharpForm
             var secPrct = ((double) datetime.Second / 60) / 100.0;
             secPrct = Math.Round(secPrct, 4, MidpointRounding.AwayFromZero);
             d += secPrct;
+            d = Math.Round(d, 4, MidpointRounding.AwayFromZero);
 
             return (double) d;
         }

@@ -50,15 +50,9 @@ namespace DesktopSistersCSharpForm.Utils
 
         public double Ratio(DateTime time)
         {
-
-            var currentTimeDec = time.ToDouble();
-            var startTimeDec = StartTime.ToDouble();
-            var stopTimeDec = EndTime.ToDouble();
-
-            double ratio = (currentTimeDec - startTimeDec) / (stopTimeDec - startTimeDec);
+            var ratio = (double)(time.Ticks - StartTime.Ticks) / (double)(EndTime.Ticks - StartTime.Ticks);
 
             return ratio;
-
         }
 
         public virtual Event Clone() { return null; }
