@@ -33,7 +33,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
             {
                 var timeRatio = Ratio(timeManager.DateTime);
 
-                var lunaImage = ImageController.LoadEventImage("lunaChariot.png");
+                var lunaImage = ImageController.LoadEventImage("luna/lunaChariot.png");
 
                 var imageHeight = Math.Min(lunaImage.Height, _resH / 4);
                 var ratio = (double)imageHeight / lunaImage.Height;

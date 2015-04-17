@@ -34,7 +34,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
                 var ratioTime = Ratio(timeManager.DateTime);
 
 
-                var twilightImage = ImageController.LoadEventImage("twilight.png");
+                var twilightImage = ImageController.LoadEventImage("twilight/twilight.png");
 
                 var imageHeight = Math.Min(twilightImage.Height, _resH/4);
                 var ratio = (double) imageHeight/twilightImage.Height;
