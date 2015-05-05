@@ -53,7 +53,7 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
         public override bool CanRun(TimeManager timeManager)
         {
-            return true;
+            return timeManager.IsNightTime;
         }
 
         public override Event Clone()
