@@ -16,6 +16,12 @@ namespace DesktopSistersCSharpForm.Events.Base
 {
     class BaseCanvas : Event
     {
+        public override void SetTimes(TimeManager timeManager)
+        {
+            StartTime = timeManager.DateTime;
+            EndTime = StartTime + Length();
+        }
+
         public override double Chance()
         {
             return 100;
@@ -23,19 +29,16 @@ namespace DesktopSistersCSharpForm.Events.Base
 
         public override List<EventTags> Tags => new List<EventTags> {EventTags.Filter};
 
+        public override bool CanBeOverRidden => true;
+
         public override TimeSpan Length()
         {
-            return TimeSpan.FromMinutes(30);
+            return TimeSpan.FromMinutes(Sisters.UpdateTime);
         }
 
         public override int ZIndex()
         {
             return 31;
-        }
-
-        public override bool IsAllDay()
-        {
-            return true;
         }
 
         private Bitmap _canvas = null;

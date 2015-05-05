@@ -15,11 +15,13 @@ namespace DesktopSistersCSharpForm.Events.Base
     {
         public override void SetTimes(TimeManager timeManager)
         {
-            StartTime = timeManager.SunRise;
-            EndTime = timeManager.SunSet;
+            StartTime = timeManager.DateTime;
+            EndTime = StartTime + Length();
         }
 
         public override List<EventTags> Tags => new List<EventTags> { EventTags.Background };
+
+        public override bool CanBeOverRidden => true;
         public override double Chance()
         {
             return 100;
@@ -27,7 +29,7 @@ namespace DesktopSistersCSharpForm.Events.Base
 
         public override TimeSpan Length()
         {
-            return TimeSpan.FromMinutes(30);
+            return TimeSpan.FromMinutes(Sisters.UpdateTime);
         }
 
 

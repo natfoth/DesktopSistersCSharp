@@ -7,6 +7,8 @@ namespace DesktopSisters
 {
     public class Sisters
     {
+        public const int UpdateTime = 5;
+
         private readonly Form _window;
 
         

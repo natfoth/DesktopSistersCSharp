@@ -57,6 +57,8 @@ namespace DesktopSistersCSharpForm.Utils
 
         public virtual bool AllowDuplicateTags() { return false;}
 
+        public virtual bool CanBeOverRidden => false;
+
         public virtual void SetTimes(TimeManager timeManager)
         {
             StartTime = timeManager.DateTime;
@@ -74,7 +76,7 @@ namespace DesktopSistersCSharpForm.Utils
         public virtual void Draw(Bitmap frame, TimeManager timeManager) { }
 
         public abstract bool CanRun(TimeManager timeManager);
-        public virtual bool CanBeOverriden() { return true; }
+
         public virtual int MaxEvents()
         {
             return 1;

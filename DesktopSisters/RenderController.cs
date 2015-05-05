@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using DesktopSisters;
 using DesktopSisters.Utils;
 using GoogleMaps.LocationServices;
+using Microsoft.Win32;
 
 namespace DesktopSistersCSharpForm
 {
@@ -110,6 +111,10 @@ namespace DesktopSistersCSharpForm
 
             if (sceneToRender.Filename == "Wallpaper.bmp")
             {
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
+                key.SetValue(@"WallpaperStyle", "6");
+                key.SetValue(@"TileWallpaper", "0");
+
                 SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, filePath, SPIF_UPDATEINIFILE);
             }
 

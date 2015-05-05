@@ -64,7 +64,8 @@
     <Compile Include="Events\Base\Night\BaseNightLandscape.cs" />
     <Compile Include="Events\Base\Night\BaseStars.cs" />
     <Compile Include="Events\Base\Night\BaseTriangle.cs" />
-    <Compile Include="Events\Dynamic\LunaDayChariot.cs" />
+    <Compile Include="Events\Dynamic\Luna\LunaDayChariot.cs" />
+    <Compile Include="Events\Dynamic\Luna\Luna_Statue.cs" />
     <Compile Include="Events\Dynamic\TwilightRandomSpawn.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Form1.cs">
@@ -161,34 +162,34 @@
     <Content Include="Day\Traditional\Sun.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\happy_luna_01.png">
+    <Content Include="Events\Images\Luna\happy_luna_01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\happy_luna_02.png">
+    <Content Include="Events\Images\Luna\happy_luna_02.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\lunaChariot.png">
+    <Content Include="Events\Images\Luna\lunaChariot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_4.png">
+    <Content Include="Events\Images\Luna\luna_4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_fragments.png">
+    <Content Include="Events\Images\Luna\luna_fragments.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_lightning.png">
+    <Content Include="Events\Images\Luna\luna_lightning.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_on_a_cloud.png">
+    <Content Include="Events\Images\Luna\luna_on_a_cloud.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_pie.png">
+    <Content Include="Events\Images\Luna\luna_pie.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\luna_statue.png">
+    <Content Include="Events\Images\Luna\luna_statue.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Events\Images\luna\woona_flowers.png">
+    <Content Include="Events\Images\Luna\woona_flowers.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Events\Images\twilight\twilight.png">
