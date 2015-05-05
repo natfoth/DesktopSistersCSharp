@@ -20,7 +20,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
 
         public override List<EventTags> Tags => new List<EventTags> { EventTags.Sun };
 
-        public override bool CanBeOverRidden => true;
+        public override bool BaseEvent => true;
 
         public override double Chance()
         {

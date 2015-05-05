@@ -20,7 +20,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
 
         public override List<EventTags> Tags => new List<EventTags> { EventTags.SkyEvent };
 
-        public override bool CanBeOverRidden => true;
+        public override bool BaseEvent => true;
 
         public override bool AllowDuplicateTags()
         {

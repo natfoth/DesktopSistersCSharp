@@ -10,8 +10,17 @@ using DesktopSistersCSharpForm.Utils;
 
 namespace DesktopSistersCSharpForm.Events.Base.Day
 {
-    class BaseCelestia : Event
+    class HappyCelestia : Event
     {
+        public int SelectedCelestia { get; set; }
+
+        public override void Init(TimeManager timeManager)
+        {
+            var r = new DesktopSistersRandom();
+
+            SelectedCelestia = r.Next(0, 6);
+        }
+
         public override void SetTimes(TimeManager timeManager)
         {
             StartTime = timeManager.DateTime;
@@ -20,16 +29,16 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
 
         public override List<EventTags> Tags => new List<EventTags> { EventTags.Celestia };
 
-        public override bool BaseEvent => true;
+        public override bool CanBeOverRidden => true;
 
         public override double Chance()
         {
-            return 100;
+            return 40;
         }
 
         public override TimeSpan Length()
         {
-            return TimeSpan.FromMinutes(Sisters.UpdateTime);
+            return TimeSpan.FromMinutes(30);
         }
 
         public override int ZIndex()
@@ -46,7 +55,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
 
                 if (_celestia == null)
                 {
-                    _celestia = ImageController.LoadDayImage("Celestia.png");
+                    _celestia = ImageController.LoadEventImage(String.Format("Celestia/celestia_happy_{0:00}.png", SelectedCelestia));
                 }
 
                 var celestiaHeight = Math.Min(_celestia.Height, 450);
@@ -71,9 +80,10 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
 
         public override Event Clone()
         {
-            var newEvent = new BaseCelestia();
+            var newEvent = new HappyCelestia();
             newEvent.StartTime = StartTime;
             newEvent.EndTime = EndTime;
+            newEvent.SelectedCelestia = SelectedCelestia;
 
             return newEvent;
         }

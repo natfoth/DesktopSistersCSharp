@@ -64,6 +64,7 @@
     <Compile Include="Events\Base\Night\BaseNightLandscape.cs" />
     <Compile Include="Events\Base\Night\BaseStars.cs" />
     <Compile Include="Events\Base\Night\BaseTriangle.cs" />
+    <Compile Include="Events\Dynamic\Celestia\HappyCelestia.cs" />
     <Compile Include="Events\Dynamic\Luna\LunaDayChariot.cs" />
     <Compile Include="Events\Dynamic\Luna\Luna_Statue.cs" />
     <Compile Include="Events\Dynamic\TwilightRandomSpawn.cs" />
@@ -160,6 +161,54 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Day\Traditional\Sun.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_armor_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_bowing_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_dress_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_flying_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_02.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_03.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_04.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_05.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_happy_06.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_magic_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_sitting_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_thinking.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_unhappy_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_working_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Events\Images\Celestia\celestia_working_02.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Events\Images\Luna\happy_luna_01.png">

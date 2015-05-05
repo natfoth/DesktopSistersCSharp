@@ -21,7 +21,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
 
         public override List<EventTags> Tags => new List<EventTags> { EventTags.Landscape };
 
-        public override bool CanBeOverRidden => true;
+        public override bool BaseEvent => true;
         public override double Chance()
         {
             return 100;

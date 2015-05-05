@@ -57,7 +57,9 @@ namespace DesktopSistersCSharpForm.Utils
 
         public virtual bool AllowDuplicateTags() { return false;}
 
-        public virtual bool CanBeOverRidden => false;
+        public virtual bool CanBeOverRidden => BaseEvent;
+
+        public virtual bool BaseEvent => false;
 
         public virtual void SetTimes(TimeManager timeManager)
         {

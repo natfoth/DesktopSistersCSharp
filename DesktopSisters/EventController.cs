@@ -66,11 +66,25 @@ namespace DesktopSistersCSharpForm
 
             //end base events
 
+            //----------------
             //Luna Events
+            //-----------------
             _events.Add(new LunaDayChariot());
             _events.Add(new Luna_Statue());
 
-            //End Luna Events
+            
+            //----------------
+            // Celestia Events
+            //----------------
+
+            _events.Add(new HappyCelestia());
+
+
+
+
+
+
+
 
             _events.Add(new TwilightRandomSpawn());
 
@@ -143,6 +157,10 @@ namespace DesktopSistersCSharpForm
                         var listOfSameTag =
                             newEventsForScene.Where(x => x.CanBeOverRidden && x.Tags.Any(y => newEvent.Tags.Contains(y)))
                                 .ToList();
+
+                        if(listOfSameTag.Count > 0 && newEvent.BaseEvent) // base events are never allowed to override
+                            continue;
+                        
 
                         foreach (var sameEvent in listOfSameTag)
                         {

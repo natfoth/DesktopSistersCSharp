@@ -29,7 +29,7 @@ namespace DesktopSistersCSharpForm.Events.Base
 
         public override List<EventTags> Tags => new List<EventTags> {EventTags.Filter};
 
-        public override bool CanBeOverRidden => true;
+        public override bool BaseEvent => true;
 
         public override TimeSpan Length()
         {
