@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Background };
+
         public override double Chance()
         {
             return 100;
@@ -62,7 +64,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             }
 
 
-            var bleedWidth = _resW*2/5;
+            var bleedWidth = ResW*2/5;
 
 
             BitmapData bitmapData1 = frame.LockBits(new Rectangle(0, 0,
@@ -84,9 +86,9 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
 
                         var Dist = Math.Sqrt((moonX - x)*(moonX - x) + (moonY - y)*(moonY - y));
 
-                        var Base = ImgProcLib.BlendColor(backgroundColor, horizonColor, (double) y/(double) _resH);
+                        var Base = ImgProcLib.BlendColor(backgroundColor, horizonColor, (double) y/(double) ResH);
                         var Night = ImgProcLib.BlendColor(bleedColor, nightColor,
-                            ((double) (Math.Max(x - _resW + bleedWidth, 0)))/(double) bleedWidth);
+                            ((double) (Math.Max(x - ResW + bleedWidth, 0)))/(double) bleedWidth);
                         var BG = ImgProcLib.BlendColor(Base, Night, Night[2]/255.0f); // blends the value of (red / 255)
 
                         var color = BG;

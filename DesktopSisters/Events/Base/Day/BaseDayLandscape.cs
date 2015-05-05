@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
             EndTime = timeManager.SunSet;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Landscape };
+
         public override double Chance()
         {
             return 100;
@@ -45,7 +47,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
                     _landscape = ImageController.LoadDayImage("Landscape.png");
                 }
 
-                g.DrawImage(_landscape, new Rectangle(0, _resH - _landscape.Height, ((int)((double)_resW)), _landscape.Height));
+                g.DrawImage(_landscape, new Rectangle(0, ResH - _landscape.Height, ((int)((double)ResW)), _landscape.Height));
 
 
                 _landscape.Dispose();

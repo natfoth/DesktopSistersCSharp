@@ -18,6 +18,13 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.SkyEvent };
+
+        public override bool AllowDuplicateTags()
+        {
+            return true;
+        }
+
         public override double Chance()
         {
             return 100;
@@ -45,7 +52,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
                     _triangle = ImageController.LoadNightImage("Triangle.png");
                 }
 
-                g.DrawImageUnscaled(_triangle, (int)(_resW - ((double)(1.0 - timeManager.NightRatio) * (double)_resW * 0.5)) - 400, 50);
+                g.DrawImageUnscaled(_triangle, (int)(ResW - ((double)(1.0 - timeManager.NightRatio) * (double)ResW * 0.5)) - 400, 50);
 
 
                 _triangle.Dispose();

@@ -17,6 +17,8 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
             return 1;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Twilight };
+
         public override TimeSpan Length()
         {
             return TimeSpan.FromMinutes(30);
@@ -36,14 +38,14 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
                 var twilightImage = ImageController.LoadEventImage("twilight/twilight.png");
 
-                var imageHeight = Math.Min(twilightImage.Height, _resH/4);
+                var imageHeight = Math.Min(twilightImage.Height, ResH/4);
                 var ratio = (double) imageHeight/twilightImage.Height;
                 var imageWidth = (int) (twilightImage.Width*ratio);
 
                 // var twilightSparkle = new SceneObject("twilight.png", new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight), 0);
 
                 g.DrawImage(twilightImage,
-                    new Rectangle(_resW - imageWidth - 10, _resH - imageHeight - 10, imageWidth, imageHeight));
+                    new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight));
 
                 g.Save();
             }

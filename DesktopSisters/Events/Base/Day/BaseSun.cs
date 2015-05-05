@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
             EndTime = timeManager.SunSet;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Sun };
+
         public override double Chance()
         {
             return 100;
@@ -45,7 +47,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
                     _sun = ImageController.LoadDayImage("Sun.png");
                 }
 
-                var sunHeight = Math.Min(_sun.Height, _resH / 3.4);
+                var sunHeight = Math.Min(_sun.Height, ResH / 3.4);
                 var ratio = (double)sunHeight / _sun.Height;
                 var sunWidth = (int)(_sun.Width * ratio);
 

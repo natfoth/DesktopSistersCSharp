@@ -18,6 +18,13 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.SkyEvent };
+
+        public override bool AllowDuplicateTags()
+        {
+            return true;
+        }
+
         public override double Chance()
         {
             return 100;
@@ -45,7 +52,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
                     _fallingStar = ImageController.LoadNightImage("FallingStar.png");
                 }
 
-                g.DrawImageUnscaled(_fallingStar, (int)((double)timeManager.NightRatio * (double)_resW) + 500, 200);
+                g.DrawImageUnscaled(_fallingStar, (int)((double)timeManager.NightRatio * (double)ResW) + 500, 200);
 
 
                 _fallingStar.Dispose();

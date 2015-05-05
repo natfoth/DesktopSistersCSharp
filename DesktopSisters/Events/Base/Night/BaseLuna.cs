@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Luna, EventTags.Alicorn };
+
         public override double Chance()
         {
             return 100;
@@ -45,7 +47,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
                     _luna = ImageController.LoadNightImage("Luna.png");
                 }
 
-                g.DrawImage(_luna, new Rectangle(20, _resH - _luna.Height - 10, _luna.Width, _luna.Height));
+                g.DrawImage(_luna, new Rectangle(20, ResH - _luna.Height - 10, _luna.Width, _luna.Height));
 
 
                 _luna.Dispose();

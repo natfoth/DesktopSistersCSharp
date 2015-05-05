@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Landscape };
         public override double Chance()
         {
             return 100;
@@ -45,7 +47,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
                     _landscape = ImageController.LoadNightImage("LandscapeNight.png");
                 }
 
-                g.DrawImage(_landscape, new Rectangle(0, _resH - _landscape.Height, _resW, _landscape.Height));
+                g.DrawImage(_landscape, new Rectangle(0, ResH - _landscape.Height, ResW, _landscape.Height));
 
                 _landscape.Dispose();
                 _landscape = null;

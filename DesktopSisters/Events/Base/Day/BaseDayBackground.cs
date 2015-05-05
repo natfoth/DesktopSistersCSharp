@@ -19,6 +19,7 @@ namespace DesktopSistersCSharpForm.Events.Base
             EndTime = timeManager.SunSet;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Background };
         public override double Chance()
         {
             return 100;
@@ -37,9 +38,9 @@ namespace DesktopSistersCSharpForm.Events.Base
 
         public override void Draw(Bitmap frame, TimeManager timeManager)
         {
-            var innerCircle = 1000.0*_resW*1.0/1680.0;
+            var innerCircle = 1000.0*ResW*1.0/1680.0;
             //INNER_CIRCLE = 1000;
-            var outerCircle = 1000.0*_resW*1.0/1680.0;
+            var outerCircle = 1000.0*ResW*1.0/1680.0;
             var SunX = timeManager.SunX;
             var SunY = timeManager.SunY;
 

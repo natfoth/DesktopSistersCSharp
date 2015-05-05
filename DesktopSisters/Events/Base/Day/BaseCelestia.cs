@@ -18,6 +18,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
             EndTime = timeManager.SunSet;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Celestia, EventTags.Alicorn };
+
         public override double Chance()
         {
             return 100;
@@ -49,7 +51,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
                 var ratio = (double)celestiaHeight / _celestia.Height;
                 var celestWidth = (int)(_celestia.Width * ratio);
 
-                g.DrawImage(_celestia, new Rectangle(20, _resH - celestiaHeight - 10, celestWidth, celestiaHeight));
+                g.DrawImage(_celestia, new Rectangle(20, ResH - celestiaHeight - 10, celestWidth, celestiaHeight));
 
 
                 _celestia.Dispose();

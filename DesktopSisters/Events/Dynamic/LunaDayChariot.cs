@@ -17,6 +17,8 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
             return 3;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Luna, EventTags.Alicorn };
+
         public override TimeSpan Length()
         {
             return TimeSpan.FromMinutes(5);
@@ -35,13 +37,13 @@ namespace DesktopSistersCSharpForm.Events.Dynamic
 
                 var lunaImage = ImageController.LoadEventImage("luna/lunaChariot.png");
 
-                var imageHeight = Math.Min(lunaImage.Height, _resH / 4);
+                var imageHeight = Math.Min(lunaImage.Height, ResH / 4);
                 var ratio = (double)imageHeight / lunaImage.Height;
                 var imageWidth = (int)(lunaImage.Width * ratio);
 
                 // var twilightSparkle = new SceneObject("twilight.png", new Rectangle(ResW - imageWidth - 10, ResH - imageHeight - 10, imageWidth, imageHeight), 0);
 
-                var xLocation = _resW - (_resW* timeRatio);
+                var xLocation = ResW - (ResW* timeRatio);
 
                 g.DrawImage(lunaImage, new Rectangle((int) xLocation, imageHeight + 30, imageWidth, imageHeight));
 

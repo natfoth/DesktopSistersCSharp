@@ -9,21 +9,53 @@ using DesktopSisters;
 
 namespace DesktopSistersCSharpForm.Utils
 {
+    public enum EventTags
+    {
+        //Filter
+        Filter,
+
+        //Background
+        Background,
+        Landscape,
+        Sun,
+        Moon,
+        Stars,
+        Clouds,
+        SkyEvent,
+
+        //Ponies
+        Celestia,
+        Luna,
+        Twilight,
+        Fluttershy,
+        RainbowDash,
+        Applejack,
+        Rarity,
+        PinkiePie,
+
+
+        Alicorn,
+    };
+
     public abstract class Event : IEquatable<Event>
     {
         public DateTime StartTime = DateTime.Now;
         public DateTime EndTime = DateTime.Now;
 
-        protected int _resW = Screen.PrimaryScreen.Bounds.Width;
-        protected int _resH = Screen.PrimaryScreen.Bounds.Height;
+        protected readonly int ResW = Screen.PrimaryScreen.Bounds.Width;
+        protected readonly int ResH = Screen.PrimaryScreen.Bounds.Height;
 
         public virtual void Init(TimeManager timeManager) { }
 
         public abstract double Chance(); // between 0 - 100
 
+        public abstract List<EventTags> Tags { get; }
+
         public abstract TimeSpan Length();
         public abstract int ZIndex();
         public virtual bool IsAllDay() { return false; }
+
+        public virtual bool AllowDuplicateTags() { return false;}
 
         public virtual void SetTimes(TimeManager timeManager)
         {
@@ -57,16 +89,6 @@ namespace DesktopSistersCSharpForm.Utils
 
         public virtual Event Clone() { return null; }
 
-
-
-        /*public Event Clone()
-        {
-            var newEvent = new Event();
-            newEvent.StartTime = StartTime;
-            newEvent.EndTime = EndTime;
-
-            return newEvent;
-        }*/
 
         public virtual void Dispose()
         {

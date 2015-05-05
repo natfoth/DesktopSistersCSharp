@@ -21,6 +21,8 @@ namespace DesktopSistersCSharpForm.Events.Base
             return 100;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> {EventTags.Filter};
+
         public override TimeSpan Length()
         {
             return TimeSpan.FromMinutes(30);
@@ -46,14 +48,14 @@ namespace DesktopSistersCSharpForm.Events.Base
                 if (directory == null)
                     return;
 
-                _canvas = new Bitmap(_resW, _resH);
+                _canvas = new Bitmap(ResW, ResH);
 
                 var canvasImage = new Bitmap(Image.FromFile(Path.Combine(directory, "CanvasTexture.jpg")));
 
                 using (var canvas = Graphics.FromImage(_canvas)) // resize the canvas to fit the wallpaper size
                 {
                     canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    canvas.DrawImage(canvasImage, new Rectangle(0, 0, _resW, _resH));
+                    canvas.DrawImage(canvasImage, new Rectangle(0, 0, ResW, ResH));
                     canvas.Save();
                 }
             }

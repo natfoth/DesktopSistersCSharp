@@ -19,6 +19,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
             EndTime = timeManager.SunSet;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Clouds };
+
         public override double Chance()
         {
             return 100;
@@ -47,9 +49,9 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
                 }
 
                 #region Clouds
-                g.DrawImageUnscaled(_clouds[2], (int)(_resW - ((double)(1.0 - timeManager.DayRatio) * (double)_resW * 0.5)), -20);
-                g.DrawImageUnscaled(_clouds[1], (int)(_resW - ((double)(1.0 - timeManager.DayRatio) * (double)_resW * 0.5)) - 220, -20);
-                g.DrawImageUnscaled(_clouds[0], (int)(_resW - ((double)(1.0 - timeManager.DayRatio) * (double)_resW * 0.5)) - 400, -20);
+                g.DrawImageUnscaled(_clouds[2], (int)(ResW - ((double)(1.0 - timeManager.DayRatio) * (double)ResW * 0.5)), -20);
+                g.DrawImageUnscaled(_clouds[1], (int)(ResW - ((double)(1.0 - timeManager.DayRatio) * (double)ResW * 0.5)) - 220, -20);
+                g.DrawImageUnscaled(_clouds[0], (int)(ResW - ((double)(1.0 - timeManager.DayRatio) * (double)ResW * 0.5)) - 400, -20);
                 #endregion
 
                 foreach (var cloud in _clouds)

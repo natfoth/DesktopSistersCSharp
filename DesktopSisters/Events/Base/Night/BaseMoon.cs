@@ -19,6 +19,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Moon };
+
         public override double Chance()
         {
             return 100;

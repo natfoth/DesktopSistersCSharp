@@ -19,6 +19,8 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
             EndTime = timeManager.SunRise;
         }
 
+        public override List<EventTags> Tags => new List<EventTags> { EventTags.Stars };
+
         public override double Chance()
         {
             return 100;
@@ -46,7 +48,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Night
                     _stars = ImageController.LoadNightImage("Stars.png");
                 }
 
-                g.DrawImage(_stars, new Rectangle(0, 0, ((int)((double)_resW)), (_resH)));
+                g.DrawImage(_stars, new Rectangle(0, 0, ((int)((double)ResW)), (ResH)));
 
 
                 _stars.Dispose();
