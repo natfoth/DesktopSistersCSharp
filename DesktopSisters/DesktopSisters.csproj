@@ -65,6 +65,7 @@
     <Compile Include="Events\Base\Night\BaseStars.cs" />
     <Compile Include="Events\Base\Night\BaseTriangle.cs" />
     <Compile Include="Events\Dynamic\Celestia\HappyCelestia.cs" />
+    <Compile Include="Events\Dynamic\Celestia\WorkingCelestia.cs" />
     <Compile Include="Events\Dynamic\Luna\LunaDayChariot.cs" />
     <Compile Include="Events\Dynamic\Luna\Luna_Statue.cs" />
     <Compile Include="Events\Dynamic\TwilightRandomSpawn.cs" />

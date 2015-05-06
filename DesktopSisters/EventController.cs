@@ -78,7 +78,7 @@ namespace DesktopSistersCSharpForm
             //----------------
 
             _events.Add(new HappyCelestia());
-
+            _events.Add(new WorkingCelestia());
 
 
 
