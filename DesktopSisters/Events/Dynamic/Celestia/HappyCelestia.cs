@@ -18,7 +18,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
         {
             var r = new DesktopSistersRandom();
 
-            SelectedCelestia = r.Next(0, 6);
+            SelectedCelestia = r.Next(1, 6);
         }
 
         public override void SetTimes(TimeManager timeManager)
@@ -33,7 +33,7 @@ namespace DesktopSistersCSharpForm.Events.Base.Day
 
         public override double Chance()
         {
-            return 40;
+            return 30;
         }
 
         public override TimeSpan Length()
